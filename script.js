@@ -194,6 +194,10 @@ function generateChineseTitle(selected) {
    英文标题
 ========================= */
 
+/* =========================
+   英文标题
+========================= */
+
 function generateEnglishTitle(selected) {
 
   const audience = selected['目标人群 Target']
@@ -248,101 +252,88 @@ function generateEnglishTitle(selected) {
     ? getEnglish(selected['闭合方式 Closure'])
     : '';
 
-
-  let titleParts = [];
-
+  let title = '';
 
   /* 人群 + 品类 */
 
   if (audience && category) {
-    titleParts.push(audience + ' ' + category);
+    title = audience + ' ' + category;
   } else if (audience) {
-    titleParts.push(audience);
+    title = audience;
   } else if (category) {
-    titleParts.push(category);
+    title = category;
   }
-
 
   /* 场景 */
 
   if (occasion) {
-    titleParts.push(occasion + ' Wear');
+    title += ' for ' + occasion + ' Wear';
   }
-
 
   /* 功能 + 图案 + 风格 */
 
-  let stylePart = [];
+  const styleParts = [];
 
   if (feature) {
-    stylePart.push(feature);
+    styleParts.push(feature);
   }
 
   if (pattern) {
-    stylePart.push(pattern);
+    styleParts.push(pattern);
   }
 
   if (style) {
-    stylePart.push(style);
+    styleParts.push(style);
   }
 
-  if (stylePart.length) {
-    titleParts.push(stylePart.join(' ') + ' Design');
+  if (styleParts.length) {
+    title += ' with ' + styleParts.join(' ') + ' Design';
   }
-
 
   /* 领型 / 腰型 */
 
   if (neckline) {
-    titleParts.push(neckline);
+    title += ' with ' + neckline;
   }
-
 
   /* 袖长 */
 
   if (sleeve) {
-    titleParts.push(sleeve);
+    title += ' ' + sleeve;
   }
-
 
   /* 版型 */
 
   if (fit) {
-    titleParts.push(fit);
+    title += ' ' + fit + ' Fit';
   }
-
 
   /* 面料 */
 
   if (material) {
-    titleParts.push(material);
+    title += ' made from ' + material;
   }
-
 
   /* 颜色 */
 
   if (color) {
-    titleParts.push(color);
+    title += ' in ' + color;
   }
-
 
   /* 季节 */
 
   if (season) {
-    titleParts.push('for ' + season);
+    title += ' for ' + season;
   }
-
 
   /* 闭合方式 */
 
   if (closure) {
-    titleParts.push(closure);
+    title += ' with ' + closure;
   }
 
-
-return titleParts.join(' ');
+  return title.trim();
 }
-
 
 /* =========================
    标题生成
