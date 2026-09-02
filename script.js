@@ -215,91 +215,160 @@ function generateEnglishTitle(selected) {
   const color = get('颜色 Color');
   const closure = get('闭合方式 Closure');
 
-  /* 判断是否为裤装 */
+  /* 判断裤装 */
   const isBottom =
     /shorts|pants|trousers/i.test(category);
 
-  /* 标题主体 */
-  const parts = [];
+  /* =========================
+     1. 基础主体
+  ========================= */
+
+  const core = [];
 
   if (audience) {
-    parts.push(audience);
+    core.push(audience);
   }
 
   if (category) {
-    parts.push(category);
+    core.push(category);
   }
 
-  /* 场景 */
+  let title = core.join(' ');
+
+
+  /* =========================
+     2. 场景
+  ========================= */
+
   if (occasion) {
-    parts.push(`for ${occasion} Wear`);
+    title += ` for ${occasion} Wear`;
   }
 
-  /* 领型 / 腰型 */
+
+  /* =========================
+     3. 领型 / 腰型
+  ========================= */
+
   if (detail) {
-    parts.push(`with ${detail}`);
+    title += ` with ${detail}`;
   }
 
-  /* 袖长：裤装不添加 */
+
+  /* =========================
+     4. 袖长
+     裤装自动忽略
+  ========================= */
+
   if (sleeve && !isBottom) {
-    parts.push(sleeve);
+    title += ` ${sleeve}`;
   }
 
-  /* 功能 + 图案 */
-  const featureParts = [];
+
+  /* =========================
+     5. 功能 + 图案
+  ========================= */
+
+  const designParts = [];
 
   if (feature) {
-    featureParts.push(feature);
+    designParts.push(feature);
   }
 
   if (pattern) {
-    featureParts.push(pattern);
+    designParts.push(pattern);
   }
 
-  if (featureParts.length) {
-    parts.push(`featuring ${featureParts.join(' and ')}`);
+  if (designParts.length) {
+
+    if (detail) {
+      title += ` featuring ${designParts.join(' and ')}`;
+    } else {
+      title += ` featuring ${designParts.join(' and ')}`;
+    }
+
   }
 
-  /* 风格 */
+
+  /* =========================
+     6. 风格
+  ========================= */
+
   if (style) {
-    parts.push(`in ${style} Style`);
+    title += ` in ${style} Style`;
   }
 
-  /* 版型 */
+
+  /* =========================
+     7. 版型
+  ========================= */
+
   if (fit) {
-    parts.push(`with ${fit} Fit`);
+
+    if (style) {
+      title += ` with ${fit} Fit`;
+    } else {
+      title += ` in ${fit} Fit`;
+    }
+
   }
 
-  /* 面料 */
+
+  /* =========================
+     8. 面料
+  ========================= */
+
   if (material) {
-    parts.push(`made from ${material}`);
+    title += ` made from ${material}`;
   }
 
-  /* 颜色 */
+
+  /* =========================
+     9. 颜色
+  ========================= */
+
   if (color) {
-    parts.push(`in ${color}`);
+    title += ` in ${color}`;
   }
 
-  /* 季节 */
+
+  /* =========================
+     10. 季节
+  ========================= */
+
   if (season) {
-    parts.push(`for ${season}`);
+    title += ` for ${season}`;
   }
 
-  /* 闭合方式 */
-  if (
-    closure &&
-    !(
-      detail &&
-      detail.toLowerCase().includes('drawstring') &&
-      closure.toLowerCase().includes('drawstring')
-    )
-  ) {
-    parts.push(`with ${closure}`);
+
+  /* =========================
+     11. 闭合方式
+     避免 Drawstring 重复
+  ========================= */
+
+  if (closure) {
+
+    const detailLower =
+      detail.toLowerCase();
+
+    const closureLower =
+      closure.toLowerCase();
+
+    const alreadyHasDrawstring =
+      detailLower.includes('drawstring') &&
+      closureLower.includes('drawstring');
+
+    if (!alreadyHasDrawstring) {
+      title += ` with ${closure}`;
+    }
   }
 
-  return parts
-    .filter(Boolean)
-    .join(' ')
+
+  /* =========================
+     最终清理
+  ========================= */
+
+  return title
+    .replace(/,/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
