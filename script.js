@@ -198,185 +198,111 @@ function generateChineseTitle(selected) {
 
 function generateEnglishTitle(selected) {
 
-  const audience = selected['目标人群 Target']
-    ? getEnglish(selected['目标人群 Target'])
-    : '';
+  const get = key =>
+    selected[key] ? getEnglish(selected[key]) : '';
 
-  const category = selected['品类 Category']
-    ? getEnglish(selected['品类 Category'])
-    : '';
-
-  const occasion = selected['场景 Occasion']
-    ? getEnglish(selected['场景 Occasion'])
-    : '';
-
-  const detail = selected['领型/腰型 Neckline & Waist']
-    ? getEnglish(selected['领型/腰型 Neckline & Waist'])
-    : '';
-
-  const sleeve = selected['款长 Sleeve']
-    ? getEnglish(selected['款长 Sleeve'])
-    : '';
-
-  const feature = selected['功能 Feature']
-    ? getEnglish(selected['功能 Feature'])
-    : '';
-
-  const pattern = selected['图案 Pattern']
-    ? getEnglish(selected['图案 Pattern'])
-    : '';
-
-  const style = selected['风格 Style']
-    ? getEnglish(selected['风格 Style'])
-    : '';
-
-  const season = selected['季节 Season']
-    ? getEnglish(selected['季节 Season'])
-    : '';
-
-  const fit = selected['版型 Fit']
-    ? getEnglish(selected['版型 Fit'])
-    : '';
-
-  const material = selected['面料 Material']
-    ? getEnglish(selected['面料 Material'])
-    : '';
-
-  const color = selected['颜色 Color']
-    ? getEnglish(selected['颜色 Color'])
-    : '';
-
-  const closure = selected['闭合方式 Closure']
-    ? getEnglish(selected['闭合方式 Closure'])
-    : '';
-
+  const audience = get('目标人群 Target');
+  const category = get('品类 Category');
+  const occasion = get('场景 Occasion');
+  const detail = get('领型/腰型 Neckline & Waist');
+  const sleeve = get('款长 Sleeve');
+  const feature = get('功能 Feature');
+  const pattern = get('图案 Pattern');
+  const style = get('风格 Style');
+  const season = get('季节 Season');
+  const fit = get('版型 Fit');
+  const material = get('面料 Material');
+  const color = get('颜色 Color');
+  const closure = get('闭合方式 Closure');
 
   /* 判断是否为裤装 */
+  const isBottom =
+    /shorts|pants|trousers/i.test(category);
 
-  const isBottom = /shorts|pants|trousers/i.test(category);
-
-
-  /* =========================
-     标题主体
-  ========================= */
-
+  /* 标题主体 */
   const parts = [];
 
   if (audience) {
     parts.push(audience);
   }
 
-  if (occasion) {
-    parts.push(occasion);
-  }
-
   if (category) {
     parts.push(category);
   }
 
-
-  /* =========================
-     领型 / 腰型
-  ========================= */
-
-  if (detail) {
-    parts.push(detail);
+  /* 场景 */
+  if (occasion) {
+    parts.push(`for ${occasion} Wear`);
   }
 
+  /* 领型 / 腰型 */
+  if (detail) {
+    parts.push(`with ${detail}`);
+  }
 
-  /* =========================
-     袖长
-     裤装不添加袖长
-  ========================= */
-
+  /* 袖长：裤装不添加 */
   if (sleeve && !isBottom) {
     parts.push(sleeve);
   }
 
-
-  /* =========================
-     功能
-  ========================= */
+  /* 功能 + 图案 */
+  const featureParts = [];
 
   if (feature) {
-    parts.push(feature);
+    featureParts.push(feature);
   }
-
-
-  /* =========================
-     图案
-  ========================= */
 
   if (pattern) {
-    parts.push(pattern);
+    featureParts.push(pattern);
   }
 
+  if (featureParts.length) {
+    parts.push(`featuring ${featureParts.join(' and ')}`);
+  }
 
-  /* =========================
-     风格
-  ========================= */
-
+  /* 风格 */
   if (style) {
-    parts.push(style);
+    parts.push(`in ${style} Style`);
   }
 
-
-  /* =========================
-     版型
-  ========================= */
-
+  /* 版型 */
   if (fit) {
-    parts.push(fit);
+    parts.push(`with ${fit} Fit`);
   }
 
-
-  /* =========================
-     面料
-  ========================= */
-
+  /* 面料 */
   if (material) {
-    parts.push(material);
+    parts.push(`made from ${material}`);
   }
 
-
-  /* =========================
-     颜色
-  ========================= */
-
+  /* 颜色 */
   if (color) {
-    parts.push(color);
+    parts.push(`in ${color}`);
   }
 
-
-  /* =========================
-     季节
-  ========================= */
-
+  /* 季节 */
   if (season) {
-    parts.push(season);
+    parts.push(`for ${season}`);
   }
 
-
-  /* =========================
-     闭合方式
-  ========================= */
-
-  if (closure) {
-    parts.push(closure);
+  /* 闭合方式 */
+  if (
+    closure &&
+    !(
+      detail &&
+      detail.toLowerCase().includes('drawstring') &&
+      closure.toLowerCase().includes('drawstring')
+    )
+  ) {
+    parts.push(`with ${closure}`);
   }
-
-
-  /* =========================
-     最终标题
-  ========================= */
 
   return parts
     .filter(Boolean)
-    .join(' ')
+    .join(', ')
     .replace(/\s+/g, ' ')
     .trim();
 }
-
 /* =========================
    标题生成
 ========================= */
@@ -431,8 +357,13 @@ function initKeywords() {
         <div class="keyword-card">
 
           <h4>
-            ${esc(d.dimension)}
-            <span class="priority">
+  ${esc(d.dimension)}
+  ${
+    d.dimension === '图案 Pattern'
+      ? '<span class="keyword-note">（自行添加商品对应的印花内容）</span>'
+      : ''
+  }
+  <span class="priority">
               ${esc(d.priority)}
             </span>
           </h4>
