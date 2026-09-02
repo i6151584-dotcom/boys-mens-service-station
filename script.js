@@ -176,34 +176,97 @@ function generateChineseTitle(selected) {
   return result.join(' + ');
 }
 
-function generateEnglishTitle(selected) {
-  const order = [
-    '目标人群 Target',
-    '品类 Category',
-    '场景 Occasion',
-    '领型/腰型 Neckline & Waist',
-    '款长 Sleeve',
-    '功能 Feature',
-    '图案 Pattern',
-    '风格 Style',
-    '季节 Season',
-    '版型 Fit',
-    '面料 Material',
-    '颜色 Color',
-    '闭合方式 Closure'
-  ];
+function generateTitle(){
 
-  const result = [];
+  let selected = {};
 
-  order.forEach(dimension => {
-    if (selected[dimension]) {
-      result.push(getEnglish(selected[dimension]));
-    }
+  $$('#keywordControls select').forEach(select => {
+    if (!select.value) return;
+
+    let index = Number(select.dataset.index);
+    let dimension = keywordData.dimensions[index]?.dimension || '';
+
+    selected[dimension] = select.value;
   });
 
-  return result.join(', ');
-}
+  if (!Object.keys(selected).length) {
+    $('#titleOutput').textContent = '请至少选择一个关键词';
+    return;
+  }
 
+  function getEnglish(text) {
+    let parts = String(text).split(' ');
+    return parts.length > 1 ? parts.slice(1).join(' ') : text;
+  }
+
+  function getChinese(text) {
+    let parts = String(text).split(' ');
+    return parts.length > 1 ? parts[0] : text;
+  }
+
+  const get = key => selected[key] ? getEnglish(selected[key]) : '';
+  const getZh = key => selected[key] ? getChinese(selected[key]) : '';
+
+  const audience = get('目标人群 Target');
+  const category = get('品类 Category');
+  const occasion = get('场景 Occasion');
+  const neckline = get('领型/腰型 Neckline & Waist');
+  const sleeve = get('款长 Sleeve');
+  const feature = get('功能 Feature');
+  const pattern = get('图案 Pattern');
+  const style = get('风格 Style');
+  const season = get('季节 Season');
+  const fit = get('版型 Fit');
+  const material = get('面料 Material');
+  const color = get('颜色 Color');
+  const closure = get('闭合方式 Closure');
+
+  let title = '';
+
+  if (audience) title += audience + ' ';
+  if (category) title += category;
+
+  if (occasion) title += ' for ' + occasion;
+  if (neckline) title += ', ' + neckline;
+  if (sleeve) title += ', ' + sleeve;
+  if (feature) title += ', ' + feature;
+  if (pattern) title += ', ' + pattern;
+  if (style) title += ', ' + style;
+  if (season) title += ' for ' + season;
+  if (fit) title += ', ' + fit;
+  if (material) title += ', ' + material;
+  if (color) title += ', ' + color;
+  if (closure) title += ', ' + closure;
+
+  let zhTitle = '';
+
+  const zhList = [
+    getZh('目标人群 Target'),
+    getZh('品类 Category'),
+    getZh('场景 Occasion'),
+    getZh('领型/腰型 Neckline & Waist'),
+    getZh('款长 Sleeve'),
+    getZh('功能 Feature'),
+    getZh('图案 Pattern'),
+    getZh('风格 Style'),
+    getZh('季节 Season'),
+    getZh('版型 Fit'),
+    getZh('面料 Material'),
+    getZh('颜色 Color'),
+    getZh('闭合方式 Closure')
+  ].filter(Boolean);
+
+  zhTitle = zhList.join(' + ');
+
+  $('#titleOutput').innerHTML = `
+    <div class="title-cn">${esc(zhTitle)}</div>
+    <div class="title-en">${esc(title.trim())}</div>
+  `;
+
+  $('#titleOutput').dataset.zh = zhTitle;
+  $('#titleOutput').dataset.en = title.trim();
+
+}
 function initKeywords() {
   const formula = $('#formula');
 
