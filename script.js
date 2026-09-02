@@ -299,7 +299,7 @@ function generateEnglishTitle(selected) {
 
   return parts
     .filter(Boolean)
-    .join(', ')
+    .join(' ')
     .replace(/\s+/g, ' ')
     .trim();
 }
