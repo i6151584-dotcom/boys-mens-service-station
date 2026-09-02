@@ -190,9 +190,7 @@ function generateChineseTitle(selected) {
 }
 
 
-/* =========================
-   英文标题
-========================= */
+
 
 /* =========================
    英文标题
@@ -212,7 +210,7 @@ function generateEnglishTitle(selected) {
     ? getEnglish(selected['场景 Occasion'])
     : '';
 
-  const neckline = selected['领型/腰型 Neckline & Waist']
+  const detail = selected['领型/腰型 Neckline & Waist']
     ? getEnglish(selected['领型/腰型 Neckline & Waist'])
     : '';
 
@@ -252,87 +250,131 @@ function generateEnglishTitle(selected) {
     ? getEnglish(selected['闭合方式 Closure'])
     : '';
 
-  let title = '';
 
-  /* 人群 + 品类 */
+  /* 判断是否为裤装 */
 
-  if (audience && category) {
-    title = audience + ' ' + category;
-  } else if (audience) {
-    title = audience;
-  } else if (category) {
-    title = category;
+  const isBottom = /shorts|pants|trousers/i.test(category);
+
+
+  /* =========================
+     标题主体
+  ========================= */
+
+  const parts = [];
+
+  if (audience) {
+    parts.push(audience);
   }
-
-  /* 场景 */
 
   if (occasion) {
-    title += ' for ' + occasion + ' Wear';
+    parts.push(occasion);
   }
 
-  /* 功能 + 图案 + 风格 */
+  if (category) {
+    parts.push(category);
+  }
 
-  const styleParts = [];
+
+  /* =========================
+     领型 / 腰型
+  ========================= */
+
+  if (detail) {
+    parts.push(detail);
+  }
+
+
+  /* =========================
+     袖长
+     裤装不添加袖长
+  ========================= */
+
+  if (sleeve && !isBottom) {
+    parts.push(sleeve);
+  }
+
+
+  /* =========================
+     功能
+  ========================= */
 
   if (feature) {
-    styleParts.push(feature);
+    parts.push(feature);
   }
+
+
+  /* =========================
+     图案
+  ========================= */
 
   if (pattern) {
-    styleParts.push(pattern);
+    parts.push(pattern);
   }
+
+
+  /* =========================
+     风格
+  ========================= */
 
   if (style) {
-    styleParts.push(style);
+    parts.push(style);
   }
 
-  if (styleParts.length) {
-    title += ' with ' + styleParts.join(' ') + ' Design';
-  }
 
-  /* 领型 / 腰型 */
-
-  if (neckline) {
-    title += ' with ' + neckline;
-  }
-
-  /* 袖长 */
-
-  if (sleeve) {
-    title += ' ' + sleeve;
-  }
-
-  /* 版型 */
+  /* =========================
+     版型
+  ========================= */
 
   if (fit) {
-    title += ' ' + fit + ' Fit';
+    parts.push(fit);
   }
 
-  /* 面料 */
+
+  /* =========================
+     面料
+  ========================= */
 
   if (material) {
-    title += ' made from ' + material;
+    parts.push(material);
   }
 
-  /* 颜色 */
+
+  /* =========================
+     颜色
+  ========================= */
 
   if (color) {
-    title += ' in ' + color;
+    parts.push(color);
   }
 
-  /* 季节 */
+
+  /* =========================
+     季节
+  ========================= */
 
   if (season) {
-    title += ' for ' + season;
+    parts.push(season);
   }
 
-  /* 闭合方式 */
+
+  /* =========================
+     闭合方式
+  ========================= */
 
   if (closure) {
-    title += ' with ' + closure;
+    parts.push(closure);
   }
 
-  return title.trim();
+
+  /* =========================
+     最终标题
+  ========================= */
+
+  return parts
+    .filter(Boolean)
+    .join(' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 /* =========================
