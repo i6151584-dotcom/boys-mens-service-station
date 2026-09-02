@@ -1,101 +1,202 @@
 {
-  "formula": "核心维度 + 重要维度 + 拓展维度",
+  "formula": "人群 + 品类 + 场景 + 领型/袖长/腰型 + 功能 + 图案 + 风格 + 季节 + 版型 + 面料材质 + 颜色 + 细节/规格 + 闭合方式 + 节日活动",
   "dimensions": [
     {
-      "dimension": "核心品类",
+      "dimension": "品类 Category",
       "priority": "核心",
       "terms": [
-        "T恤",
-        "短裤",
-        "长裤",
-        "卫衣",
-        "夹克",
-        "外套",
-        "衬衫",
-        "POLO衫",
-        "运动裤",
-        "休闲裤"
+        "T恤 T-Shirt",
+        "图形T恤 Graphic Tees",
+        "Polo衫 Polo Shirt",
+        "文化衫 Tee",
+        "定制T恤 Custom T Shirt",
+        "长裤 Pants",
+        "短裤 Shorts",
+        "裤子 Trousers",
+        "衬衫 Shirt",
+        "卫衣 Hoodie"
       ]
     },
     {
-      "dimension": "人群",
+      "dimension": "目标人群 Target",
       "priority": "核心",
       "terms": [
-        "男士",
-        "男童",
-        "儿童",
-        "青少年"
+        "男士 Men's",
+        "中性 Unisex",
+        "男童 Boys'",
+        "男士服装 Men's Clothing",
+        "男性 Men",
+        "男装 Mens",
+        "青少年 Youth",
+        "男士休闲 Mens Casual"
       ]
     },
     {
-      "dimension": "风格",
+      "dimension": "领型/腰型 Neckline & Waist",
+      "priority": "核心",
+      "terms": [
+        "圆领 Crew Neck",
+        "V领 V-Neck",
+        "翻领 Lapel/Collar",
+        "立领 Stand Collar",
+        "古巴领 Cuban Collar",
+        "Polo领 Polo Collar",
+        "亨利领 Henley",
+        "扣领 Button Collar",
+        "弹力腰 Elastic Waist",
+        "抽绳腰 Drawstring Waist"
+      ]
+    },
+    {
+      "dimension": "闭合方式 Closure",
+      "priority": "核心",
+      "terms": [
+        "拉链 Zip Up",
+        "抽绳 Drawstring",
+        "套头 Pullover",
+        "纽扣 Button",
+        "半拉链 Half Zip",
+        "松紧带 Elastic Band",
+        "暗扣 Hidden Snap",
+        "魔术贴 Velcro",
+        "系带 Tie",
+        "卡扣 Buckle"
+      ]
+    },
+    {
+      "dimension": "款长 Sleeve",
+      "priority": "核心",
+      "terms": [
+        "短袖 Short Sleeve",
+        "长袖 Long Sleeve",
+        "无袖 Sleeveless",
+        "七分袖 3/4 Sleeve",
+        "五分袖 5/8 Sleeve",
+        "落肩袖 Drop Shoulder",
+        "插肩袖 Raglan Sleeve",
+        "背心款 Tank Style",
+        "宽袖 Wide Sleeve",
+        "收口袖 Cuffed Sleeve"
+      ]
+    },
+    {
+      "dimension": "场景 Occasion",
+      "priority": "核心",
+      "terms": [
+        "休闲 Casual",
+        "日常 Daily",
+        "健身 Gym",
+        "户外 Outdoor",
+        "街头 Street",
+        "度假 Vacation",
+        "通勤 Commute",
+        "派对 Party",
+        "运动 Sports",
+        "旅行 Travel"
+      ]
+    },
+    {
+      "dimension": "图案 Pattern",
       "priority": "重要",
       "terms": [
-        "休闲",
-        "运动",
-        "户外",
-        "街头",
-        "复古",
-        "潮流",
-        "美式",
-        "Y2K",
-        "复古运动",
-        "都市休闲"
+        "字母印花 Letter Print",
+        "图形印花 Graphic Print",
+        "纯色 Solid",
+        "条纹 Striped",
+        "格纹 Plaid",
+        "迷彩 Camouflage",
+        "花卉 Floral",
+        "撞色 Color-block",
+        "渐变 Gradient",
+        "几何印花 Geometric Print"
       ]
     },
     {
-      "dimension": "功能/场景",
+      "dimension": "风格 Style",
       "priority": "重要",
       "terms": [
-        "日常穿着",
-        "运动训练",
-        "户外休闲",
-        "健身",
-        "跑步",
-        "篮球",
-        "足球",
-        "海滩",
-        "度假",
-        "旅行"
+        "休闲日常 Casual Daily",
+        "街头 Street",
+        "复古 Retro",
+        "潮流 Trendy",
+        "时尚 Fashion",
+        "嘻哈 Hip-hop",
+        "夏威夷度假风 Hawaiian",
+        "学院风 Preppy"
       ]
     },
     {
-      "dimension": "材质",
-      "priority": "拓展",
+      "dimension": "功能 Feature",
+      "priority": "重要",
       "terms": [
-        "棉质",
-        "纯棉",
-        "水洗棉",
-        "亚麻",
-        "棉麻",
-        "针织",
-        "速干面料",
-        "轻量面料"
+        "透气 Breathable",
+        "弹力 Stretch",
+        "速干 Quick-Dry",
+        "吸湿排汗 Moisture-Wicking",
+        "免烫 Non-Iron",
+        "防皱 Wrinkle-Resistant",
+        "遇水显色 Color-Change When Wet",
+        "轻薄 Lightweight"
       ]
     },
     {
-      "dimension": "版型",
-      "priority": "拓展",
+      "dimension": "季节 Season",
+      "priority": "重要",
       "terms": [
-        "宽松版型",
-        "常规版型",
-        "落肩",
-        "直筒",
-        "宽腿",
-        "修身",
-        "Oversized"
+        "春季 Spring",
+        "夏季 Summer",
+        "秋季 Autumn",
+        "冬季 Winter",
+        "春秋 Spring-Fall",
+        "四季 All Seasons",
+        "夏日 Summer Days",
+        "四季皆宜 Year-Round"
       ]
     },
     {
-      "dimension": "季节",
+      "dimension": "版型 Fit",
+      "priority": "重要",
+      "terms": [
+        "宽松版 Loose/Oversized",
+        "修身版 Slim/Skinny",
+        "常规版 Regular/Straight",
+        "合身版 Fitted",
+        "廓形版 Boxy",
+        "oversize风 Oversize",
+        "直筒 Straight",
+        "锥形 Tapered"
+      ]
+    },
+    {
+      "dimension": "面料 Material",
       "priority": "拓展",
       "terms": [
-        "春季",
-        "夏季",
-        "秋季",
-        "冬季",
-        "秋冬",
-        "春夏"
+        "纯棉 100% Cotton",
+        "棉混纺 Cotton Blend",
+        "涤纶 Polyester",
+        "亚麻 Linen",
+        "氨纶 Spandex",
+        "法兰绒 Flannel Fleece",
+        "针织 Knitted",
+        "锦纶 Nylon",
+        "冰丝 Ice Silk",
+        "棉麻 Cotton-Linen"
+      ]
+    },
+    {
+      "dimension": "颜色 Color",
+      "priority": "拓展",
+      "terms": [
+        "黑色 Black",
+        "白色 White",
+        "灰色 Gray",
+        "蓝色 Blue",
+        "卡其色 Khaki",
+        "军绿色 Army Green",
+        "红色 Red",
+        "藏青色 Navy",
+        "橙色 Orange",
+        "深灰色 Dark Gray"
       ]
     }
   ]
