@@ -340,7 +340,7 @@ function generateEnglishTitle(selected) {
   }
 
 
-  return titleParts.join(', ');
+return titleParts.join(' ');
 }
 
 
