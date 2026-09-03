@@ -189,6 +189,8 @@ function generateChineseTitle(selected) {
     .map(key => getChinese(selected[key]))
     .join(' + ');
 }
+
+
 /* =========================
    英文标题
 ========================= */
@@ -218,7 +220,7 @@ function generateEnglishTitle(selected) {
   const isBottom =
     /shorts|pants|trousers/i.test(category);
 
-  let titleParts = [];
+  const titleParts = [];
 
   /* 1. 人群 + 2. 品类 */
   if (audience && category) {
@@ -234,24 +236,23 @@ function generateEnglishTitle(selected) {
     titleParts.push(`for ${occasion} Wear`);
   }
 
-  /* 4. 领型 / 腰型 */
+  /* 4. 领型 / 腰型 + 款长 + 版型 + 闭合方式 */
   const constructionParts = [];
 
   if (necklineWaist) {
     constructionParts.push(necklineWaist);
   }
 
-  /* 4. 款长 */
+  /* 裤装不添加袖长 */
   if (sleeve && !isBottom) {
     constructionParts.push(sleeve);
   }
 
-  /* 9. 版型 */
   if (fit) {
     constructionParts.push(`${fit} Fit`);
   }
 
-  /* 13. 闭合方式 */
+  /* 闭合方式 */
   if (closure) {
 
     const detailLower =
@@ -270,11 +271,7 @@ function generateEnglishTitle(selected) {
     }
   }
 
-  /*
-   * 所有结构类信息统一使用一个 with
-   * 避免出现：
-   * with Drawstring Waist with Loose Fit
-   */
+  /* 所有结构信息只使用一个 with */
   if (constructionParts.length) {
     titleParts.push(
       `with ${constructionParts.join(' and ')}`
@@ -353,11 +350,6 @@ function generateEnglishTitle(selected) {
 ========================= */
 
 function generateTitle() {
-/* =========================
-   标题生成
-========================= */
-
-function generateTitle() {
 
   const selected = getSelectedKeywords();
 
@@ -407,13 +399,15 @@ function initKeywords() {
         <div class="keyword-card">
 
           <h4>
-  ${esc(d.dimension)}
-  ${
-    d.dimension === '图案 Pattern'
-      ? '<span class="keyword-note">（自行添加商品对应的印花内容）</span>'
-      : ''
-  }
-  <span class="priority">
+            ${esc(d.dimension)}
+
+            ${
+              d.dimension === '图案 Pattern'
+                ? '<span class="keyword-note">（自行添加商品对应的印花内容）</span>'
+                : ''
+            }
+
+            <span class="priority">
               ${esc(d.priority)}
             </span>
           </h4>
