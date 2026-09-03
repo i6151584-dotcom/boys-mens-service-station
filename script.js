@@ -1,526 +1,1160 @@
+/* =====================================================
+   DATA
+===================================================== */
+
 let categories = [];
 let keywordData = {};
 let trends = [];
 
-const $ = s => document.querySelector(s);
-const $$ = s => document.querySelectorAll(s);
+
+/* =====================================================
+   BASIC HELPERS
+===================================================== */
+
+const $ = selector => document.querySelector(selector);
+
+const $$ = selector => document.querySelectorAll(selector);
+
 
 function esc(str) {
+
   return String(str ?? '')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+
 }
+
 
 function uniq(arr) {
-  return [...new Set(arr.filter(Boolean))];
+
+  return [
+    ...new Set(
+      arr.filter(Boolean)
+    )
+  ];
+
 }
 
-function fillSelect(selector, values) {
+
+function toast(message) {
+
+  const el = $('#toast');
+
+  if (!el) return;
+
+  el.textContent = message;
+
+  el.classList.add('show');
+
+  setTimeout(() => {
+
+    el.classList.remove('show');
+
+  }, 1500);
+
+}
+
+
+/* =====================================================
+   PAGE SWITCH
+===================================================== */
+
+function switchPage(pageName) {
+
+  $$('.page').forEach(page => {
+
+    page.classList.remove('active-page');
+
+  });
+
+
+  const target = $(`#page-${pageName}`);
+
+  if (target) {
+
+    target.classList.add('active-page');
+
+  }
+
+
+  $$('.nav-item').forEach(item => {
+
+    item.classList.toggle(
+      'active',
+      item.dataset.page === pageName
+    );
+
+  });
+
+
+  window.scrollTo({
+
+    top:0,
+    behavior:'smooth'
+
+  });
+
+
+  history.replaceState(
+    null,
+    '',
+    `#${pageName}`
+  );
+
+}
+
+
+/* 顶部导航 */
+
+$$('.nav-item').forEach(item => {
+
+  item.addEventListener('click', () => {
+
+    switchPage(
+      item.dataset.page
+    );
+
+  });
+
+});
+
+
+/* 页面内部跳转 */
+
+$$('[data-page-jump]').forEach(button => {
+
+  button.addEventListener('click', () => {
+
+    const target = document.getElementById(
+      button.dataset.pageJump
+    );
+
+    if (!target) return;
+
+    target.scrollIntoView({
+
+      behavior:'smooth',
+      block:'center'
+
+    });
+
+  });
+
+});
+
+
+/* URL 页面恢复 */
+
+function loadPageFromHash() {
+
+  const hash =
+    location.hash.replace('#','');
+
+  const validPages = [
+    'join',
+    'categories',
+    'title',
+    'resources'
+  ];
+
+  if (validPages.includes(hash)) {
+
+    switchPage(hash);
+
+  } else {
+
+    switchPage('join');
+
+  }
+
+}
+
+
+window.addEventListener(
+  'hashchange',
+  loadPageFromHash
+);
+
+
+/* =====================================================
+   CATEGORY GUIDE
+===================================================== */
+
+function fillSelect(
+  selector,
+  values
+) {
+
   const el = $(selector);
+
   if (!el) return;
 
   const current = el.value;
 
+
   el.innerHTML =
     '<option value="">全部</option>' +
+
     values
-      .sort((a, b) => String(a).localeCompare(String(b), 'zh'))
-      .map(v => `<option value="${esc(v)}">${esc(v)}</option>`)
+      .sort(
+        (a,b) =>
+          String(a).localeCompare(
+            String(b),
+            'zh'
+          )
+      )
+      .map(value =>
+
+        `<option value="${esc(value)}">
+          ${esc(value)}
+        </option>`
+
+      )
       .join('');
 
+
   if (values.includes(current)) {
+
     el.value = current;
+
   }
+
 }
 
-
-/* =========================
-   类目指引
-========================= */
 
 function initCats() {
-  fillSelect('#audience', uniq(categories.map(x => x['人群'])));
-  fillSelect('#cat1', uniq(categories.map(x => x['拆分一层品类'])));
-
-  updateCat2();
-  renderCats();
-
-  ['#audience', '#cat1', '#cat2', '#catSearch'].forEach(selector => {
-    const el = $(selector);
-    if (!el) return;
-
-    el.addEventListener('input', () => {
-      if (selector === '#audience' || selector === '#cat1') {
-        updateCat2();
-      }
-
-      renderCats();
-    });
-  });
-}
-
-function updateCat2() {
-  const audience = $('#audience')?.value || '';
-  const cat1 = $('#cat1')?.value || '';
-
-  const rows = categories.filter(x =>
-    (!audience || x['人群'] === audience) &&
-    (!cat1 || x['拆分一层品类'] === cat1)
-  );
 
   fillSelect(
+
+    '#audience',
+
+    uniq(
+      categories.map(
+        item => item['人群']
+      )
+    )
+
+  );
+
+
+  fillSelect(
+
+    '#cat1',
+
+    uniq(
+      categories.map(
+        item => item['拆分一层品类']
+      )
+    )
+
+  );
+
+
+  updateCat2();
+
+  renderCats();
+
+
+  [
+    '#audience',
+    '#cat1',
+    '#cat2'
+  ].forEach(selector => {
+
+    const el = $(selector);
+
+    if (!el) return;
+
+    el.addEventListener(
+      'change',
+      () => {
+
+        if (
+          selector === '#audience' ||
+          selector === '#cat1'
+        ) {
+
+          updateCat2();
+
+        }
+
+        renderCats();
+
+      }
+    );
+
+  });
+
+
+  const search = $('#catSearch');
+
+  if (search) {
+
+    search.addEventListener(
+      'input',
+      renderCats
+    );
+
+  }
+
+
+  const clear =
+    $('#clearCategory');
+
+  if (clear) {
+
+    clear.addEventListener(
+      'click',
+      () => {
+
+        $('#audience').value = '';
+        $('#cat1').value = '';
+
+        updateCat2();
+
+        $('#cat2').value = '';
+
+        $('#catSearch').value = '';
+
+        renderCats();
+
+      }
+    );
+
+  }
+
+}
+
+
+function updateCat2() {
+
+  const audience =
+    $('#audience')?.value || '';
+
+  const cat1 =
+    $('#cat1')?.value || '';
+
+
+  const rows =
+    categories.filter(item =>
+
+      (!audience ||
+        item['人群'] === audience) &&
+
+      (!cat1 ||
+        item['拆分一层品类'] === cat1)
+
+    );
+
+
+  fillSelect(
+
     '#cat2',
-    uniq(rows.map(x => x['拆分二层品类']))
-  );
-}
 
-function renderCats() {
-  const audience = $('#audience')?.value || '';
-  const cat1 = $('#cat1')?.value || '';
-  const cat2 = $('#cat2')?.value || '';
-  const q = ($('#catSearch')?.value || '').trim().toLowerCase();
+    uniq(
+      rows.map(
+        item => item['拆分二层品类']
+      )
+    )
 
-  const rows = categories.filter(x =>
-    (!audience || x['人群'] === audience) &&
-    (!cat1 || x['拆分一层品类'] === cat1) &&
-    (!cat2 || x['拆分二层品类'] === cat2) &&
-    (!q || Object.values(x).join(' ').toLowerCase().includes(q))
   );
 
-  $('#catCount').textContent = rows.length;
-
-  $('#catResults').innerHTML =
-    rows.slice(0, 300).map(x => `
-      <div class="cat-item">
-        <div class="cat-meta">
-          ${esc(x['人群'])} ·
-          ${esc(x['拆分一层品类'])} ·
-          ${esc(x['拆分二层品类'])}
-        </div>
-
-        <div class="cat-path">
-          ${highlight(x['类目路径'], q)}
-        </div>
-      </div>
-    `).join('') ||
-    '<div class="cat-item">没有找到匹配类目。</div>';
 }
 
-function highlight(text, q) {
+
+function highlight(text, query) {
+
   let result = esc(text);
 
-  if (!q) return result;
+  if (!query) return result;
 
-  const re = new RegExp(
-    '(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')',
-    'ig'
+
+  const escaped =
+    query.replace(
+      /[.*+?^${}()|[\]\\]/g,
+      '\\$&'
+    );
+
+
+  const regex =
+    new RegExp(
+      `(${escaped})`,
+      'ig'
+    );
+
+
+  return result.replace(
+    regex,
+    '<mark>$1</mark>'
   );
 
-  return result.replace(re, '<mark>$1</mark>');
 }
 
 
-/* =========================
-   标题优化
-========================= */
+function renderCats() {
+
+  const audience =
+    $('#audience')?.value || '';
+
+  const cat1 =
+    $('#cat1')?.value || '';
+
+  const cat2 =
+    $('#cat2')?.value || '';
+
+  const query =
+    ($('#catSearch')?.value || '')
+      .trim()
+      .toLowerCase();
+
+
+  const rows =
+    categories.filter(item => {
+
+      const allText =
+        Object.values(item)
+          .join(' ')
+          .toLowerCase();
+
+
+      return (
+
+        (!audience ||
+          item['人群'] === audience) &&
+
+        (!cat1 ||
+          item['拆分一层品类'] === cat1) &&
+
+        (!cat2 ||
+          item['拆分二层品类'] === cat2) &&
+
+        (!query ||
+          allText.includes(query))
+
+      );
+
+    });
+
+
+  $('#catCount').textContent =
+    rows.length;
+
+
+  if (!rows.length) {
+
+    $('#catResults').innerHTML = `
+
+      <div class="empty-category">
+
+        ✦
+
+        <p>
+          没有找到匹配的类目
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  $('#catResults').innerHTML =
+
+    rows
+      .slice(0,300)
+      .map(item => `
+
+        <div class="cat-item">
+
+          <div class="cat-meta">
+
+            ${esc(item['人群'])}
+            ·
+            ${esc(item['拆分一层品类'])}
+            ·
+            ${esc(item['拆分二层品类'])}
+
+          </div>
+
+          <div class="cat-path">
+
+            ${highlight(
+              item['类目路径'],
+              query
+            )}
+
+          </div>
+
+        </div>
+
+      `)
+      .join('');
+
+}
+
+
+/* =====================================================
+   TITLE KEYWORD LIBRARY
+===================================================== */
+
+
+/*
+  如果 keywords.json 以后增加新的维度，
+  这里仍然可以自动兼容。
+*/
+
+const TITLE_ORDER = [
+
+  '目标人群 Target',
+  '人群 Target',
+
+  '品类 Category',
+
+  '场景 Occasion',
+
+  '领型/腰型 Neckline & Waist',
+
+  '款长 Sleeve',
+
+  '功能 Feature',
+
+  '图案 Pattern',
+
+  '风格 Style',
+
+  '季节 Season',
+
+  '版型 Fit',
+
+  '面料 Material',
+
+  '颜色 Color',
+
+  '细节/规格 Detail & Specs',
+
+  '闭合方式 Closure',
+
+  '节日活动 Holiday & Event'
+
+];
+
+
+/* 补充缺失维度 */
+
+function addMissingKeywordDimensions() {
+
+  if (!keywordData.dimensions) {
+
+    keywordData.dimensions = [];
+
+  }
+
+
+  const existing =
+    keywordData.dimensions
+      .map(
+        item => item.dimension
+      );
+
+
+  const fallback = {
+
+    '细节/规格 Detail & Specs': {
+
+      priority:'拓展',
+
+      terms:[
+
+        '刺绣 Embroidered',
+        '贴布 Embroidered Patch',
+        '口袋 Pocket',
+        '侧袋 Side Pocket',
+        '罗纹 Ribbed',
+        '拼接 Panelled',
+        '印花细节 Printed Detail',
+        '拉链口袋 Zip Pocket'
+
+      ]
+
+    },
+
+
+    '节日活动 Holiday & Event': {
+
+      priority:'拓展',
+
+      terms:[
+
+        'Halloween',
+        'Christmas',
+        'Thanksgiving',
+        'Black Friday',
+        'Cyber Monday',
+        "Valentine's Day",
+        'Easter',
+        "Mother's Day",
+        "Father's Day",
+        'Independence Day',
+        "New Year's Day",
+        'Back to School'
+
+      ]
+
+    }
+
+  };
+
+
+  Object.entries(fallback).forEach(
+    ([dimension, data]) => {
+
+      if (!existing.includes(dimension)) {
+
+        keywordData.dimensions.push({
+
+          dimension,
+
+          priority:data.priority,
+
+          terms:data.terms
+
+        });
+
+      }
+
+    }
+  );
+
+}
+
 
 function getChinese(text) {
-  const parts = String(text).split(' ');
+
+  const parts =
+    String(text).split(' ');
 
   return parts.length > 1
     ? parts[0]
     : text;
+
 }
 
+
 function getEnglish(text) {
-  const parts = String(text).split(' ');
+
+  const parts =
+    String(text).split(' ');
 
   return parts.length > 1
     ? parts.slice(1).join(' ')
     : text;
+
 }
+
 
 function getSelectedKeywords() {
+
   const result = {};
 
-  $$('#keywordControls select').forEach(select => {
-    if (!select.value) return;
 
-    const index = Number(select.dataset.index);
+  $$('#keywordControls select')
+    .forEach(select => {
 
-    const dimension =
-      keywordData.dimensions[index]?.dimension || '';
+      if (!select.value) return;
 
-    result[dimension] = select.value;
-  });
+
+      const index =
+        Number(select.dataset.index);
+
+
+      const dimension =
+        keywordData
+          .dimensions[index]
+          ?.dimension || '';
+
+
+      result[dimension] =
+        select.value;
+
+    });
+
 
   return result;
+
 }
 
 
-/* =========================
-   中文标题
-========================= */
+/* =====================================================
+   CHINESE TITLE
+===================================================== */
 
-function generateChineseTitle(selected) {
-  const order = [
-    '目标人群 Target',
-    '品类 Category',
-    '场景 Occasion',
-    '领型/腰型 Neckline & Waist',
-    '款长 Sleeve',
-    '功能 Feature',
-    '图案 Pattern',
-    '风格 Style',
-    '季节 Season',
-    '版型 Fit',
-    '面料 Material',
-    '颜色 Color',
-    '细节/规格 Detail & Specs',
-    '闭合方式 Closure',
-    '节日活动 Holiday & Event'
-  ];
+function generateChineseTitle(
+  selected
+) {
 
-  return order
-    .filter(key => selected[key])
-    .map(key => getChinese(selected[key]))
+  const normalized = {};
+
+
+  Object.keys(selected).forEach(
+    key => {
+
+      normalized[key] =
+        getChinese(
+          selected[key]
+        );
+
+    }
+  );
+
+
+  const keys = TITLE_ORDER.filter(
+    key => normalized[key]
+  );
+
+
+  return keys
+    .map(key => normalized[key])
     .join(' + ');
+
 }
 
 
-/* =========================
-   英文标题
-========================= */
+/* =====================================================
+   ENGLISH TITLE
+===================================================== */
 
-function generateEnglishTitle(selected) {
+function generateEnglishTitle(
+  selected
+) {
 
   const get = key =>
-    selected[key] ? getEnglish(selected[key]) : '';
+    selected[key]
+      ? getEnglish(selected[key])
+      : '';
 
-  const audience = get('目标人群 Target');
-  const category = get('品类 Category');
-  const occasion = get('场景 Occasion');
-  const necklineWaist = get('领型/腰型 Neckline & Waist');
-  const sleeve = get('款长 Sleeve');
-  const feature = get('功能 Feature');
-  const pattern = get('图案 Pattern');
-  const style = get('风格 Style');
-  const season = get('季节 Season');
-  const fit = get('版型 Fit');
-  const material = get('面料 Material');
-  const color = get('颜色 Color');
-  const specs = get('细节/规格 Detail & Specs');
-  const closure = get('闭合方式 Closure');
-  const holiday = get('节日活动 Holiday & Event');
 
-  /* 判断是否为裤装 */
+  const audience =
+    get('目标人群 Target') ||
+    get('人群 Target');
+
+
+  const category =
+    get('品类 Category');
+
+
+  const occasion =
+    get('场景 Occasion');
+
+
+  const neckline =
+    get(
+      '领型/腰型 Neckline & Waist'
+    );
+
+
+  const sleeve =
+    get('款长 Sleeve');
+
+
+  const feature =
+    get('功能 Feature');
+
+
+  const pattern =
+    get('图案 Pattern');
+
+
+  const style =
+    get('风格 Style');
+
+
+  const season =
+    get('季节 Season');
+
+
+  const fit =
+    get('版型 Fit');
+
+
+  const material =
+    get('面料 Material');
+
+
+  const color =
+    get('颜色 Color');
+
+
+  const detail =
+    get(
+      '细节/规格 Detail & Specs'
+    );
+
+
+  const closure =
+    get('闭合方式 Closure');
+
+
+  const holiday =
+    get(
+      '节日活动 Holiday & Event'
+    );
+
+
   const isBottom =
-    /shorts|pants|trousers/i.test(category);
+    /shorts|pants|trousers/i
+      .test(category);
 
-  const titleParts = [];
 
-  /* 1. 人群 + 2. 品类 */
-  if (audience && category) {
-    titleParts.push(`${audience} ${category}`);
-  } else if (category) {
-    titleParts.push(category);
-  } else if (audience) {
-    titleParts.push(audience);
-  }
+  const parts = [];
 
-  /* 3. 场景 */
-  if (occasion) {
-    titleParts.push(`for ${occasion} Wear`);
-  }
 
-  /* 4. 领型 / 腰型 + 款长 + 版型 + 闭合方式 */
-  const constructionParts = [];
+  /*
+    1 人群
+    2 品类
+  */
 
-  if (necklineWaist) {
-    constructionParts.push(necklineWaist);
-  }
+  if (audience)
+    parts.push(audience);
 
-  /* 裤装不添加袖长 */
-  if (sleeve && !isBottom) {
-    constructionParts.push(sleeve);
-  }
+  if (category)
+    parts.push(category);
 
-  if (fit) {
-    constructionParts.push(`${fit} Fit`);
-  }
 
-  /* 闭合方式 */
-  if (closure) {
+  /*
+    3 场景
+  */
 
-    const detailLower =
-      necklineWaist.toLowerCase();
-
-    const closureLower =
-      closure.toLowerCase();
-
-    /* 避免 Drawstring Waist + Drawstring 重复 */
-    const duplicateDrawstring =
-      detailLower.includes('drawstring') &&
-      closureLower.includes('drawstring');
-
-    if (!duplicateDrawstring) {
-      constructionParts.push(`${closure} Closure`);
-    }
-  }
-
-  /* 所有结构信息只使用一个 with */
-  if (constructionParts.length) {
-    titleParts.push(
-      `with ${constructionParts.join(' and ')}`
+  if (occasion)
+    parts.push(
+      `for ${occasion} Wear`
     );
-  }
 
-  /* 5. 功能 + 6. 图案 */
-  const featureParts = [];
 
-  if (feature) {
-    featureParts.push(feature);
-  }
+  /*
+    4 领型 / 腰型
+  */
 
-  if (pattern) {
-    featureParts.push(pattern);
-  }
-
-  if (featureParts.length) {
-    titleParts.push(
-      `featuring ${featureParts.join(' and ')}`
+  if (neckline)
+    parts.push(
+      `with ${neckline}`
     );
+
+
+  /*
+    5 款长
+  */
+
+  if (
+    sleeve &&
+    !isBottom
+  ) {
+
+    parts.push(sleeve);
+
   }
 
-  /* 7. 风格 */
-  if (style) {
-    titleParts.push(
-      `in ${style} Style`
+
+  /*
+    6 功能
+  */
+
+  if (feature)
+    parts.push(feature);
+
+
+  /*
+    7 图案
+  */
+
+  if (pattern)
+    parts.push(
+      `featuring ${pattern}`
     );
-  }
 
-  /* 8. 季节 */
-  if (season) {
-    titleParts.push(
+
+  /*
+    8 风格
+  */
+
+  if (style)
+    parts.push(
+      `${style} Style`
+    );
+
+
+  /*
+    9 季节
+  */
+
+  if (season)
+    parts.push(
       `for ${season}`
     );
-  }
 
-  /* 10. 面料 */
-  if (material) {
-    titleParts.push(
-      `made from ${material}`
+
+  /*
+    10 版型
+  */
+
+  if (fit)
+    parts.push(
+      `in ${fit} Fit`
     );
-  }
 
-  /* 11. 颜色 */
-  if (color) {
-    titleParts.push(
+
+  /*
+    11 面料
+  */
+
+  if (material)
+    parts.push(
+      `crafted from ${material}`
+    );
+
+
+  /*
+    12 颜色
+  */
+
+  if (color)
+    parts.push(
       `in ${color}`
     );
-  }
 
-  /* 12. 细节 / 规格 */
-  if (specs) {
-    titleParts.push(
-      `featuring ${specs}`
+
+  /*
+    13 细节
+  */
+
+  if (detail)
+    parts.push(
+      `with ${detail}`
     );
+
+
+  /*
+    14 闭合方式
+  */
+
+  if (closure) {
+
+    const alreadyDrawstring =
+      detail
+        .toLowerCase()
+        .includes('drawstring') &&
+      closure
+        .toLowerCase()
+        .includes('drawstring');
+
+
+    if (!alreadyDrawstring) {
+
+      parts.push(
+        `finished with ${closure}`
+      );
+
+    }
+
   }
 
-  /* 14. 节日活动 */
-  if (holiday) {
-    titleParts.push(
+
+  /*
+    15 节日 / 活动
+  */
+
+  if (holiday)
+    parts.push(
       `for ${holiday}`
     );
-  }
 
-  return titleParts
+
+  return parts
+
     .join(' ')
-    .replace(/[,，]/g, '')
-    .replace(/\s+/g, ' ')
+
+    .replace(/,/g,'')
+
+    .replace(/\s+/g,' ')
+
     .trim();
+
 }
 
 
-/* =========================
-   标题生成
-========================= */
-
-function generateTitle() {
-
-  const selected = getSelectedKeywords();
-
-  if (!Object.keys(selected).length) {
-    $('#titleOutput').textContent =
-      '请至少选择一个关键词';
-
-    return;
-  }
-
-  const chineseTitle =
-    generateChineseTitle(selected);
-
-  const englishTitle =
-    generateEnglishTitle(selected);
-
-  $('#titleOutput').innerHTML = `
-    <div class="title-cn">
-      ${esc(chineseTitle)}
-    </div>
-
-    <div class="title-en">
-      ${esc(englishTitle)}
-    </div>
-  `;
-
-  $('#titleOutput').dataset.zh =
-    chineseTitle;
-
-  $('#titleOutput').dataset.en =
-    englishTitle;
-}
-
-
-/* =========================
-   标题关键词
-========================= */
+/* =====================================================
+   INIT TITLE TOOL
+===================================================== */
 
 function initKeywords() {
 
+  addMissingKeywordDimensions();
+
+
   $('#formula').textContent =
-    keywordData.formula || '';
+
+    keywordData.formula ||
+
+    '人群 + 品类 + 场景 + 领型/袖长/腰型 + 功能 + 图案 + 风格 + 季节 + 版型 + 面料材质 + 颜色 + 细节/规格 + 闭合方式 + 节日活动';
+
 
   $('#keywordControls').innerHTML =
-    (keywordData.dimensions || [])
-      .map((d, i) => `
+
+    keywordData.dimensions
+
+      .map((dimension,index) => `
+
         <div class="keyword-card">
 
           <h4>
-            ${esc(d.dimension)}
+
+            <span>
+              ${esc(
+                dimension.dimension
+              )}
+            </span>
 
             ${
-              d.dimension === '图案 Pattern'
-                ? '<span class="keyword-note">（自行添加商品对应的印花内容）</span>'
-                : ''
+              dimension.dimension ===
+              '图案 Pattern'
+
+              ?
+
+              '<span class="keyword-note">印花内容可根据商品自行补充</span>'
+
+              :
+
+              ''
             }
 
             <span class="priority">
-              ${esc(d.priority)}
+              ${esc(
+                dimension.priority || '拓展'
+              )}
             </span>
+
           </h4>
 
+
           <label>
+
             选择关键词
 
-            <select data-index="${i}">
+            <select
+              data-index="${index}">
 
               <option value="">
                 不添加
               </option>
 
-              ${(d.terms || [])
-                .map(t => `
-                  <option value="${esc(t)}">
-                    ${esc(t)}
-                  </option>
-                `)
-                .join('')}
+              ${
+                (dimension.terms || [])
+                  .map(term => `
+
+                    <option value="${esc(term)}">
+
+                      ${esc(term)}
+
+                    </option>
+
+                  `)
+                  .join('')
+              }
 
             </select>
 
           </label>
 
         </div>
+
       `)
+
       .join('');
+
 }
 
 
-/* =========================
-   趋势资讯
-========================= */
+/* =====================================================
+   GENERATE TITLE
+===================================================== */
 
-function loadTrends() {
+function generateTitle() {
 
-  $('#trendList').innerHTML =
-    (trends || [])
-      .map(t => `
-        <article class="trend-card">
-
-          <div class="trend-head">
-            <strong>
-              ${esc(t.market)}
-            </strong>
-
-            <span>
-              ${esc(t.week)}
-            </span>
-          </div>
-
-          ${(t.items || [])
-            .map(i => `
-              <div class="trend-item">
-
-                <b>
-                  ${esc(i.title)}
-                </b>
-
-                <p>
-                  ${esc(i.body)}
-                </p>
-
-              </div>
-            `)
-            .join('')}
-
-        </article>
-      `)
-      .join('');
-}
+  const selected =
+    getSelectedKeywords();
 
 
-/* =========================
-   提示
-========================= */
+  if (
+    !Object.keys(selected).length
+  ) {
 
-function toast(msg) {
+    $('#titleOutput').innerHTML = `
 
-  const t = $('#toast');
+      <div class="empty-output">
 
-  if (!t) return;
+        <span>✦</span>
 
-  t.textContent = msg;
+        <p>
+          请至少选择一个关键词
+        </p>
 
-  t.classList.add('show');
+      </div>
 
-  setTimeout(() => {
-    t.classList.remove('show');
-  }, 1500);
-}
+    `;
 
-
-/* =========================
-   按钮
-========================= */
-
-document.addEventListener('click', e => {
-
-  const copyButton =
-    e.target.closest('[data-copy]');
-
-  if (copyButton) {
-
-    navigator.clipboard
-      .writeText(copyButton.dataset.copy)
-      .then(() => toast('已复制'));
+    return;
 
   }
 
-});
 
+  const chinese =
+    generateChineseTitle(
+      selected
+    );
+
+
+  const english =
+    generateEnglishTitle(
+      selected
+    );
+
+
+  $('#titleOutput').innerHTML = `
+
+    <div class="title-cn">
+
+      ${esc(chinese)}
+
+    </div>
+
+
+    <div class="title-en">
+
+      ${esc(english)}
+
+    </div>
+
+  `;
+
+
+  $('#titleOutput').dataset.zh =
+    chinese;
+
+
+  $('#titleOutput').dataset.en =
+    english;
+
+}
+
+
+/* =====================================================
+   TITLE BUTTONS
+===================================================== */
 
 $('#generateTitle')
   ?.addEventListener(
@@ -530,73 +1164,255 @@ $('#generateTitle')
 
 
 $('#clearTitle')
-  ?.addEventListener('click', () => {
+  ?.addEventListener(
+    'click',
+    () => {
 
-    $$('#keywordControls select')
-      .forEach(x => {
-        x.value = '';
-      });
+      $$('#keywordControls select')
+        .forEach(
+          select => {
+            select.value = '';
+          }
+        );
 
-    $('#titleOutput').textContent =
-      '选择关键词后点击“生成标题”';
 
-  });
+      $('#titleOutput').innerHTML = `
+
+        <div class="empty-output">
+
+          <span>✦</span>
+
+          <p>
+            选择关键词后点击“生成标题”
+          </p>
+
+        </div>
+
+      `;
+
+    }
+  );
 
 
 $('#copyTitle')
-  ?.addEventListener('click', () => {
+  ?.addEventListener(
+    'click',
+    () => {
 
-    const title =
-      $('#titleOutput').innerText;
+      const output =
+        $('#titleOutput');
 
-    navigator.clipboard
-      .writeText(title)
-      .then(() => toast('标题已复制'));
+
+      const english =
+        output?.dataset.en || '';
+
+
+      if (!english) {
+
+        toast('请先生成标题');
+
+        return;
+
+      }
+
+
+      navigator.clipboard
+        .writeText(english)
+        .then(() => {
+
+          toast('英文标题已复制');
+
+        });
+
+    }
+  );
+
+
+/* =====================================================
+   TRENDS
+===================================================== */
+
+function loadTrends() {
+
+  const container =
+    $('#trendList');
+
+
+  if (!container) return;
+
+
+  if (!trends.length) {
+
+    container.innerHTML = `
+
+      <div class="trend-card">
+
+        <b>近期资讯</b>
+
+        <p>
+          暂无近期资讯
+        </p>
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+
+    trends
+
+      .map(trend => `
+
+        <article class="trend-card">
+
+          <div class="trend-head">
+
+            <strong>
+              ${esc(
+                trend.market
+              )}
+            </strong>
+
+            <span>
+              ${esc(
+                trend.week
+              )}
+            </span>
+
+          </div>
+
+
+          ${
+            (trend.items || [])
+              .map(item => `
+
+                <div class="trend-item">
+
+                  <b>
+                    ${esc(
+                      item.title
+                    )}
+                  </b>
+
+                  <p>
+                    ${esc(
+                      item.body
+                    )}
+                  </p>
+
+                </div>
+
+              `)
+              .join('')
+          }
+
+        </article>
+
+      `)
+
+      .join('');
+
+}
+
+
+/* =====================================================
+   COPY INVITATION
+===================================================== */
+
+$$('[data-copy]')
+  .forEach(button => {
+
+    button.addEventListener(
+      'click',
+      () => {
+
+        const value =
+          button.dataset.copy;
+
+
+        navigator.clipboard
+          .writeText(value)
+          .then(() => {
+
+            toast('邀请码已复制');
+
+          });
+
+      }
+    );
 
   });
 
 
-/* =========================
-   全局搜索
-========================= */
+/* =====================================================
+   GLOBAL SEARCH
+===================================================== */
 
-$('#globalSearch')
-  ?.addEventListener('keydown', e => {
+function initGlobalSearch() {
 
-    if (e.key !== 'Enter') return;
-
-    const q =
-      e.target.value.trim();
-
-    if (!q) return;
-
-    $('#catSearch').value = q;
-
-    location.hash = '#categories';
-
-    updateCat2();
-
-    renderCats();
-
-  });
+  const input =
+    $('#globalSearch');
 
 
-/* =========================
-   快捷键
-========================= */
+  if (!input) return;
+
+
+  input.addEventListener(
+    'keydown',
+    event => {
+
+      if (
+        event.key !== 'Enter'
+      ) return;
+
+
+      const query =
+        input.value.trim();
+
+
+      if (!query) return;
+
+
+      switchPage(
+        'categories'
+      );
+
+
+      $('#catSearch').value =
+        query;
+
+
+      renderCats();
+
+    }
+  );
+
+}
+
+
+/* Ctrl / Cmd + K */
 
 document.addEventListener(
   'keydown',
-  e => {
+  event => {
 
     if (
-      (e.metaKey || e.ctrlKey) &&
-      e.key.toLowerCase() === 'k'
+      (event.ctrlKey ||
+        event.metaKey) &&
+
+      event.key.toLowerCase() === 'k'
     ) {
 
-      e.preventDefault();
+      event.preventDefault();
 
-      $('#globalSearch')?.focus();
+      switchPage('categories');
+
+      $('#catSearch')?.focus();
 
     }
 
@@ -604,68 +1420,108 @@ document.addEventListener(
 );
 
 
-/* =========================
-   手机端菜单
-========================= */
-
-$('#menuBtn')
-  ?.addEventListener('click', () => {
-
-    const side =
-      document.querySelector('.sidebar');
-
-    if (!side) return;
-
-    side.style.display =
-      side.style.display === 'flex'
-        ? 'none'
-        : 'flex';
-
-    side.style.width = '260px';
-
-    side.style.background = '#f4f2ed';
-
-  });
-
-
-/* =========================
-   加载数据
-========================= */
+/* =====================================================
+   LOAD DATA
+===================================================== */
 
 Promise.all([
 
-  fetch('data/categories.json')
-    .then(r => r.json()),
+  fetch(
+    'data/categories.json'
+  ).then(response => {
 
-  fetch('data/keywords.json')
-    .then(r => r.json()),
+    if (!response.ok)
+      throw new Error(
+        'categories.json 加载失败'
+      );
 
-  fetch('data/trends.json')
-    .then(r => r.json())
+    return response.json();
+
+  }),
+
+
+  fetch(
+    'data/keywords.json'
+  ).then(response => {
+
+    if (!response.ok)
+      throw new Error(
+        'keywords.json 加载失败'
+      );
+
+    return response.json();
+
+  }),
+
+
+  fetch(
+    'data/trends.json'
+  ).then(response => {
+
+    if (!response.ok)
+      throw new Error(
+        'trends.json 加载失败'
+      );
+
+    return response.json();
+
+  })
 
 ])
 
-.then(([c, k, t]) => {
+.then(
+  ([categoryData,
+    keywords,
+    trendData]) => {
 
-  categories = c;
+    categories =
+      categoryData || [];
 
-  keywordData = k;
+    keywordData =
+      keywords || {};
 
-  trends = t;
+    trends =
+      trendData || [];
 
-  initCats();
 
-  initKeywords();
+    initCats();
 
-  loadTrends();
+    initKeywords();
 
-})
+    loadTrends();
 
-.catch(err => {
+    initGlobalSearch();
 
-  console.error(err);
+    loadPageFromHash();
 
-  $('#catResults').innerHTML =
-    '<div class="cat-item">数据加载失败，请确认 GitHub Pages 的文件路径正确。</div>';
+  }
+)
+
+.catch(error => {
+
+  console.error(error);
+
+
+  const result =
+    $('#catResults');
+
+
+  if (result) {
+
+    result.innerHTML = `
+
+      <div class="empty-category">
+
+        数据加载失败。
+
+        <p>
+          请确认 data 文件夹中的 JSON 文件路径正确。
+        </p>
+
+      </div>
+
+    `;
+
+  }
 
 });
