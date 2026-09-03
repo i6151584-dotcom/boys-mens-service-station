@@ -166,7 +166,6 @@ function getSelectedKeywords() {
 ========================= */
 
 function generateChineseTitle(selected) {
-
   const order = [
     '目标人群 Target',
     '品类 Category',
@@ -180,7 +179,9 @@ function generateChineseTitle(selected) {
     '版型 Fit',
     '面料 Material',
     '颜色 Color',
-    '闭合方式 Closure'
+    '细节/规格 Detail & Specs',
+    '闭合方式 Closure',
+    '节日活动 Holiday & Event'
   ];
 
   return order
@@ -188,10 +189,6 @@ function generateChineseTitle(selected) {
     .map(key => getChinese(selected[key]))
     .join(' + ');
 }
-
-
-
-
 /* =========================
    英文标题
 ========================= */
@@ -204,7 +201,7 @@ function generateEnglishTitle(selected) {
   const audience = get('目标人群 Target');
   const category = get('品类 Category');
   const occasion = get('场景 Occasion');
-  const detail = get('领型/腰型 Neckline & Waist');
+  const necklineWaist = get('领型/腰型 Neckline & Waist');
   const sleeve = get('款长 Sleeve');
   const feature = get('功能 Feature');
   const pattern = get('图案 Pattern');
@@ -213,165 +210,149 @@ function generateEnglishTitle(selected) {
   const fit = get('版型 Fit');
   const material = get('面料 Material');
   const color = get('颜色 Color');
+  const specs = get('细节/规格 Detail & Specs');
   const closure = get('闭合方式 Closure');
+  const holiday = get('节日活动 Holiday & Event');
 
-  /* 判断裤装 */
+  /* 判断是否为裤装 */
   const isBottom =
     /shorts|pants|trousers/i.test(category);
 
-  /* =========================
-     1. 基础主体
-  ========================= */
+  let titleParts = [];
 
-  const core = [];
-
-  if (audience) {
-    core.push(audience);
+  /* 1. 人群 + 2. 品类 */
+  if (audience && category) {
+    titleParts.push(`${audience} ${category}`);
+  } else if (category) {
+    titleParts.push(category);
+  } else if (audience) {
+    titleParts.push(audience);
   }
 
-  if (category) {
-    core.push(category);
-  }
-
-  let title = core.join(' ');
-
-
-  /* =========================
-     2. 场景
-  ========================= */
-
+  /* 3. 场景 */
   if (occasion) {
-    title += ` for ${occasion} Wear`;
+    titleParts.push(`for ${occasion} Wear`);
   }
 
+  /* 4. 领型 / 腰型 */
+  const constructionParts = [];
 
-  /* =========================
-     3. 领型 / 腰型
-  ========================= */
-
-  if (detail) {
-    title += ` with ${detail}`;
+  if (necklineWaist) {
+    constructionParts.push(necklineWaist);
   }
 
-
-  /* =========================
-     4. 袖长
-     裤装自动忽略
-  ========================= */
-
+  /* 4. 款长 */
   if (sleeve && !isBottom) {
-    title += ` ${sleeve}`;
+    constructionParts.push(sleeve);
   }
 
-
-  /* =========================
-     5. 功能 + 图案
-  ========================= */
-
-  const designParts = [];
-
-  if (feature) {
-    designParts.push(feature);
-  }
-
-  if (pattern) {
-    designParts.push(pattern);
-  }
-
-  if (designParts.length) {
-
-    if (detail) {
-      title += ` featuring ${designParts.join(' and ')}`;
-    } else {
-      title += ` featuring ${designParts.join(' and ')}`;
-    }
-
-  }
-
-
-  /* =========================
-     6. 风格
-  ========================= */
-
-  if (style) {
-    title += ` in ${style} Style`;
-  }
-
-
-  /* =========================
-     7. 版型
-  ========================= */
-
+  /* 9. 版型 */
   if (fit) {
-
-    if (style) {
-      title += ` with ${fit} Fit`;
-    } else {
-      title += ` in ${fit} Fit`;
-    }
-
+    constructionParts.push(`${fit} Fit`);
   }
 
-
-  /* =========================
-     8. 面料
-  ========================= */
-
-  if (material) {
-    title += ` made from ${material}`;
-  }
-
-
-  /* =========================
-     9. 颜色
-  ========================= */
-
-  if (color) {
-    title += ` in ${color}`;
-  }
-
-
-  /* =========================
-     10. 季节
-  ========================= */
-
-  if (season) {
-    title += ` for ${season}`;
-  }
-
-
-  /* =========================
-     11. 闭合方式
-     避免 Drawstring 重复
-  ========================= */
-
+  /* 13. 闭合方式 */
   if (closure) {
 
     const detailLower =
-      detail.toLowerCase();
+      necklineWaist.toLowerCase();
 
     const closureLower =
       closure.toLowerCase();
 
-    const alreadyHasDrawstring =
+    /* 避免 Drawstring Waist + Drawstring 重复 */
+    const duplicateDrawstring =
       detailLower.includes('drawstring') &&
       closureLower.includes('drawstring');
 
-    if (!alreadyHasDrawstring) {
-      title += ` with ${closure}`;
+    if (!duplicateDrawstring) {
+      constructionParts.push(`${closure} Closure`);
     }
   }
 
+  /*
+   * 所有结构类信息统一使用一个 with
+   * 避免出现：
+   * with Drawstring Waist with Loose Fit
+   */
+  if (constructionParts.length) {
+    titleParts.push(
+      `with ${constructionParts.join(' and ')}`
+    );
+  }
 
-  /* =========================
-     最终清理
-  ========================= */
+  /* 5. 功能 + 6. 图案 */
+  const featureParts = [];
 
-  return title
-    .replace(/,/g, '')
+  if (feature) {
+    featureParts.push(feature);
+  }
+
+  if (pattern) {
+    featureParts.push(pattern);
+  }
+
+  if (featureParts.length) {
+    titleParts.push(
+      `featuring ${featureParts.join(' and ')}`
+    );
+  }
+
+  /* 7. 风格 */
+  if (style) {
+    titleParts.push(
+      `in ${style} Style`
+    );
+  }
+
+  /* 8. 季节 */
+  if (season) {
+    titleParts.push(
+      `for ${season}`
+    );
+  }
+
+  /* 10. 面料 */
+  if (material) {
+    titleParts.push(
+      `made from ${material}`
+    );
+  }
+
+  /* 11. 颜色 */
+  if (color) {
+    titleParts.push(
+      `in ${color}`
+    );
+  }
+
+  /* 12. 细节 / 规格 */
+  if (specs) {
+    titleParts.push(
+      `featuring ${specs}`
+    );
+  }
+
+  /* 14. 节日活动 */
+  if (holiday) {
+    titleParts.push(
+      `for ${holiday}`
+    );
+  }
+
+  return titleParts
+    .join(' ')
+    .replace(/[,，]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
+
+
+/* =========================
+   标题生成
+========================= */
+
+function generateTitle() {
 /* =========================
    标题生成
 ========================= */
