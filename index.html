@@ -1,72 +1,423 @@
+```html
 <!doctype html>
 <html lang="zh-CN">
+
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>男童 & 男装招商运营服务站</title>
+
 <meta name="description" content="趋势 · 选品 · 商品 · 运营 · 视觉">
+
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<div class="mobile-top"><button id="menuBtn">☰</button><span>男童 & 男装服务站</span></div>
-<aside class="sidebar">
-  <div class="brand"><div class="eyebrow">SERVICE STATION</div><div class="brand-title">男童 & 男装<br>招商运营服务站</div><div class="brand-sub">趋势 · 选品 · 商品 · 运营 · 视觉</div></div>
-  <nav>
-    <a href="#join">入驻链接</a><a href="#categories">类目指引</a><a href="#visual">视觉优化</a><a href="#titleTool">标题优化</a><a href="#aw">秋冬经验分享</a><a href="#trends">近期资讯</a>
+
+<!-- 顶部导航 -->
+<header class="top-nav">
+
+  <div class="nav-brand">
+    <span class="nav-logo">✦</span>
+    <span>男童 & 男装服务站</span>
+  </div>
+
+  <nav class="top-menu">
+
+    <a href="#join">
+      <span class="nav-icon">🏠</span>
+      <span>入驻链接</span>
+    </a>
+
+    <a href="#categories">
+      <span class="nav-icon">📂</span>
+      <span>类目指引</span>
+    </a>
+
+    <a href="#titleTool">
+      <span class="nav-icon">✏️</span>
+      <span>标题生成工具</span>
+    </a>
+
+    <a href="#resources">
+      <span class="nav-icon">📚</span>
+      <span>干货资料</span>
+    </a>
+
   </nav>
-  <div class="side-note">Merchant Service Station<br>V1 · 2026</div>
-</aside>
+
+</header>
+
+
 <main>
+
+<!-- 首页 -->
 <section class="hero">
-  <div class="eyebrow">MERCHANT SERVICE STATION / 2026</div>
-  <h1>男童 & 男装<br><em>招商运营服务站</em></h1>
-  <p>把趋势、选品、商品、运营与视觉资料集中到一个可检索、可持续更新的工作台。</p>
-  <div class="global-search"><span>⌕</span><input id="globalSearch" placeholder="搜索类目、关键词、趋势、资料……"><kbd>⌘ K</kbd></div>
+
+  <div class="eyebrow">
+    MERCHANT SERVICE STATION / 2026
+  </div>
+
+  <h1>
+    男童 & 男装<br>
+    <em>招商运营服务站</em>
+  </h1>
+
+  <p>
+    把趋势、选品、商品、运营与视觉资料集中到一个可检索、可持续更新的工作台。
+  </p>
+
+  <div class="global-search">
+    <span>⌕</span>
+    <input
+      id="globalSearch"
+      placeholder="搜索类目、关键词、趋势、资料……"
+    >
+    <kbd>⌘ K</kbd>
+  </div>
+
 </section>
 
+
+<!-- 01 入驻链接 + 近期资讯 -->
 <section id="join" class="section">
- <div class="section-head"><span>01 / JOIN</span><h2>招商入驻</h2><p>快速进入入驻页面，邀请码可一键复制。</p></div>
- <div class="join-card"><div><div class="label">INVITATION CODE</div><div class="invite">dgpncz <button class="copy" data-copy="dgpncz">复制</button></div></div><a class="primary" target="_blank" href="https://seller.kuajingmaihuo.com/login/register?invitationCode=dgpncz">立即入驻 →</a></div>
+
+  <div class="section-head">
+
+    <span>01 / JOIN</span>
+
+    <h2>
+      <span class="section-icon">🏠</span>
+      入驻链接
+    </h2>
+
+    <p>
+      快速进入入驻页面，邀请码可一键复制。
+    </p>
+
+  </div>
+
+
+  <div class="join-card">
+
+    <div>
+
+      <div class="label">
+        INVITATION CODE
+      </div>
+
+      <div class="invite">
+        dgpncz
+
+        <button
+          class="copy"
+          data-copy="dgpncz">
+          复制
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <a
+      class="primary"
+      target="_blank"
+      href="https://seller.kuajingmaihuo.com/login/register?invitationCode=dgpncz">
+
+      🚀 立即入驻 →
+
+    </a>
+
+  </div>
+
+
+  <!-- 近期资讯 -->
+  <div class="sub-section">
+
+    <div class="sub-title">
+      <span>🔥</span>
+      <strong>近期资讯</strong>
+    </div>
+
+    <div id="trendList" class="trend-list"></div>
+
+    <div class="notice">
+      ⚠️ 仅提供热点参考，禁止侵权！
+    </div>
+
+  </div>
+
 </section>
 
+
+<!-- 02 类目指引 -->
 <section id="categories" class="section">
- <div class="section-head"><span>02 / CATEGORY</span><h2>类目指引</h2><p>来自 Excel「类目路径」数据，支持人群、一级类目、二级类目和关键词模糊检索。</p></div>
- <div class="filters">
-  <label>人群<select id="audience"><option value="">全部</option></select></label>
-  <label>一级类目<select id="cat1"><option value="">全部</option></select></label>
-  <label>二级类目<select id="cat2"><option value="">全部</option></select></label>
-  <label class="wide">关键词<input id="catSearch" placeholder="例如：男童 T恤 / 长裤 / POLO"></label>
- </div>
- <div class="result-bar"><strong id="catCount">0</strong> 条结果 <span>支持实时筛选</span></div>
- <div id="catResults" class="category-list"></div>
+
+  <div class="section-head">
+
+    <span>02 / CATEGORY</span>
+
+    <h2>
+      <span class="section-icon">📂</span>
+      类目指引
+    </h2>
+
+    <p>
+      来自 Excel「类目路径」数据，支持人群、一级类目、二级类目和关键词模糊检索。
+    </p>
+
+  </div>
+
+
+  <div class="filters">
+
+    <label>
+      人群
+      <select id="audience">
+        <option value="">全部</option>
+      </select>
+    </label>
+
+
+    <label>
+      一级类目
+      <select id="cat1">
+        <option value="">全部</option>
+      </select>
+    </label>
+
+
+    <label>
+      二级类目
+      <select id="cat2">
+        <option value="">全部</option>
+      </select>
+    </label>
+
+
+    <label class="wide">
+      关键词
+      <input
+        id="catSearch"
+        placeholder="例如：男童 T恤 / 长裤 / POLO">
+    </label>
+
+  </div>
+
+
+  <div class="result-bar">
+
+    <strong id="catCount">0</strong>
+    条结果
+
+    <span>
+      支持实时筛选
+    </span>
+
+  </div>
+
+
+  <div
+    id="catResults"
+    class="category-list">
+  </div>
+
 </section>
 
-<section id="visual" class="section split-section">
- <div class="section-head"><span>03 / VISUAL</span><h2>视觉优化</h2><p>完整保留原始培训资料，适合培训、复盘和商家沟通时直接查看。</p></div>
- <div class="resource-card"><div class="resource-num">01</div><div><h3>运动户外视觉优化实战</h3><p>AI制图、首图选择、背景替换、正反面首图、多色 SKC、运动属性首图、印花与背景呼应等。</p></div><a class="arrow" target="_blank" href="data/visual-guide.pdf">查看 PDF ↗</a></div>
-</section>
 
+<!-- 03 标题生成工具 -->
 <section id="titleTool" class="section">
- <div class="section-head"><span>04 / TITLE TOOL</span><h2>标题优化</h2><p>依据「标题关键词库」组合标题。优先使用核心维度，再按需加入重要、拓展词。</p></div>
- <div class="formula" id="formula"></div>
- <div id="keywordControls" class="keyword-grid"></div>
- <div class="tool-actions"><button class="primary" id="generateTitle">生成标题</button><button class="ghost" id="clearTitle">清空</button></div>
- <div class="output"><div class="output-label">GENERATED TITLE</div><div id="titleOutput">选择关键词后点击“生成标题”</div><button class="copy-output" id="copyTitle">复制标题</button></div>
+
+  <div class="section-head">
+
+    <span>03 / TITLE TOOL</span>
+
+    <h2>
+      <span class="section-icon">✏️</span>
+      标题生成工具
+    </h2>
+
+    <p>
+      依据「标题关键词库」组合标题。优先使用核心维度，再按需加入重要、拓展词。
+    </p>
+
+  </div>
+
+
+  <div
+    class="formula"
+    id="formula">
+  </div>
+
+
+  <div
+    id="keywordControls"
+    class="keyword-grid">
+  </div>
+
+
+  <div class="tool-actions">
+
+    <button
+      class="primary"
+      id="generateTitle">
+
+      ✨ 生成标题
+
+    </button>
+
+
+    <button
+      class="ghost"
+      id="clearTitle">
+
+      清空
+
+    </button>
+
+  </div>
+
+
+  <div class="output">
+
+    <div class="output-label">
+      GENERATED TITLE
+    </div>
+
+
+    <div id="titleOutput">
+      选择关键词后点击“生成标题”
+    </div>
+
+
+    <button
+      class="copy-output"
+      id="copyTitle">
+
+      📋 复制标题
+
+    </button>
+
+  </div>
+
 </section>
 
-<section id="aw" class="section split-section">
- <div class="section-head"><span>05 / AW 2026</span><h2>秋冬经验分享</h2><p>围绕秋冬趋势、运动户外、高转化设计元素与实战案例的完整原始资料。</p></div>
- <div class="aw-grid">
-   <div><div class="big-number">2026</div><p>FALL / WINTER</p></div>
-   <div><h3>从趋势判断到商品开款</h3><p>资料涵盖荆棘纹身、数字+城市名、复古哥特巴洛克、赛车风、Y2K、车元素、星星、Slogan、Meme、涂鸦卡通、骑行、渐变、东瀛风、条纹、民族图腾等方向。</p><a class="text-link" target="_blank" href="data/aw2026-guide.pdf">打开完整 PDF →</a></div>
- </div>
+
+<!-- 04 干货资料 -->
+<section id="resources" class="section">
+
+  <div class="section-head">
+
+    <span>04 / RESOURCES</span>
+
+    <h2>
+      <span class="section-icon">📚</span>
+      干货资料
+    </h2>
+
+    <p>
+      汇总视觉优化、秋冬趋势及商品运营相关资料，方便日常查阅与学习。
+    </p>
+
+  </div>
+
+
+  <div class="resource-grid">
+
+
+    <!-- 视觉优化 -->
+    <div class="resource-card">
+
+      <div class="resource-icon">
+        🎨
+      </div>
+
+      <div class="resource-content">
+
+        <div class="resource-tag">
+          VISUAL
+        </div>
+
+        <h3>
+          视觉优化实战资料
+        </h3>
+
+        <p>
+          AI制图、首图选择、背景替换、正反面首图、多色 SKC、运动属性首图、印花与背景呼应等。
+        </p>
+
+      </div>
+
+      <a
+        class="resource-button"
+        target="_blank"
+        href="documents/visual-guide.pdf">
+
+        📄 查看 PDF →
+
+      </a>
+
+    </div>
+
+
+    <!-- 秋冬经验 -->
+    <div class="resource-card">
+
+      <div class="resource-icon">
+        🍂
+      </div>
+
+      <div class="resource-content">
+
+        <div class="resource-tag">
+          AW 2026
+        </div>
+
+        <h3>
+          秋冬经验分享
+        </h3>
+
+        <p>
+          围绕秋冬趋势、运动户外、高转化设计元素与实战案例的完整资料。
+        </p>
+
+      </div>
+
+      <a
+        class="resource-button"
+        target="_blank"
+        href="data/aw2026-guide.pdf">
+
+        📄 查看 PDF →
+
+      </a>
+
+    </div>
+
+
+  </div>
+
 </section>
 
-<section id="trends" class="section">
- <div class="section-head"><span>06 / WEEKLY SIGNALS</span><h2>近期资讯</h2><p>按周维护的趋势数据库。后续新增 W36、W37……即可持续扩展。</p></div>
- <div id="trendList" class="trend-list"></div>
-</section>
-<footer>男童 & 男装招商运营服务站 · Trend · Product · Operation · Visual</footer>
+
+<footer>
+
+  男童 & 男装招商运营服务站
+  · Trend · Product · Operation · Visual
+
+</footer>
+
+
 </main>
+
+
 <div id="toast"></div>
+
+
 <script src="script.js"></script>
-</body></html>
+
+</body>
+</html>
+```
