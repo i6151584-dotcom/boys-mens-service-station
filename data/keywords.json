@@ -2,6 +2,20 @@
   "formula": "人群 + 品类 + 场景 + 领型/袖长/腰型 + 功能 + 图案 + 风格 + 季节 + 版型 + 面料材质 + 颜色 + 细节/规格 + 闭合方式 + 节日活动",
   "dimensions": [
     {
+      "dimension": "目标人群 Target",
+      "priority": "核心",
+      "terms": [
+        "男士 Men's",
+        "中性 Unisex",
+        "男童 Boys'",
+        "男士服装 Men's Clothing",
+        "男性 Men",
+        "男装 Mens",
+        "青少年 Youth",
+        "男士休闲 Mens Casual"
+      ]
+    },
+    {
       "dimension": "品类 Category",
       "priority": "核心",
       "terms": [
@@ -18,17 +32,19 @@
       ]
     },
     {
-      "dimension": "目标人群 Target",
+      "dimension": "场景 Occasion",
       "priority": "核心",
       "terms": [
-        "男士 Men's",
-        "中性 Unisex",
-        "男童 Boys'",
-        "男士服装 Men's Clothing",
-        "男性 Men",
-        "男装 Mens",
-        "青少年 Youth",
-        "男士休闲 Mens Casual"
+        "休闲 Casual",
+        "日常 Daily",
+        "健身 Gym",
+        "户外 Outdoor",
+        "街头 Street",
+        "度假 Vacation",
+        "通勤 Commute",
+        "派对 Party",
+        "运动 Sports",
+        "旅行 Travel"
       ]
     },
     {
@@ -48,22 +64,6 @@
       ]
     },
     {
-      "dimension": "闭合方式 Closure",
-      "priority": "核心",
-      "terms": [
-        "拉链 Zip Up",
-        "抽绳 Drawstring",
-        "套头 Pullover",
-        "纽扣 Button",
-        "半拉链 Half Zip",
-        "松紧带 Elastic Band",
-        "暗扣 Hidden Snap",
-        "魔术贴 Velcro",
-        "系带 Tie",
-        "卡扣 Buckle"
-      ]
-    },
-    {
       "dimension": "款长 Sleeve",
       "priority": "核心",
       "terms": [
@@ -80,19 +80,17 @@
       ]
     },
     {
-      "dimension": "场景 Occasion",
-      "priority": "核心",
+      "dimension": "功能 Feature",
+      "priority": "重要",
       "terms": [
-        "休闲 Casual",
-        "日常 Daily",
-        "健身 Gym",
-        "户外 Outdoor",
-        "街头 Street",
-        "度假 Vacation",
-        "通勤 Commute",
-        "派对 Party",
-        "运动 Sports",
-        "旅行 Travel"
+        "透气 Breathable",
+        "弹力 Stretch",
+        "速干 Quick-Dry",
+        "吸湿排汗 Moisture-Wicking",
+        "免烫 Non-Iron",
+        "防皱 Wrinkle-Resistant",
+        "遇水显色 Color-Change When Wet",
+        "轻薄 Lightweight"
       ]
     },
     {
@@ -123,20 +121,6 @@
         "嘻哈 Hip-hop",
         "夏威夷度假风 Hawaiian",
         "学院风 Preppy"
-      ]
-    },
-    {
-      "dimension": "功能 Feature",
-      "priority": "重要",
-      "terms": [
-        "透气 Breathable",
-        "弹力 Stretch",
-        "速干 Quick-Dry",
-        "吸湿排汗 Moisture-Wicking",
-        "免烫 Non-Iron",
-        "防皱 Wrinkle-Resistant",
-        "遇水显色 Color-Change When Wet",
-        "轻薄 Lightweight"
       ]
     },
     {
@@ -197,6 +181,54 @@
         "藏青色 Navy",
         "橙色 Orange",
         "深灰色 Dark Gray"
+      ]
+    },
+    {
+      "dimension": "细节/规格 Detail & Specs",
+      "priority": "拓展",
+      "terms": [
+        "多口袋 Multi-Pocket",
+        "拉链口袋 Zip Pockets",
+        "刺绣 Embroidery",
+        "拼接 Panelled",
+        "罗纹袖口 Ribbed Cuffs",
+        "松紧下摆 Elastic Hem",
+        "可调节 Adjustable",
+        "功能口袋 Functional Pockets"
+      ]
+    },
+    {
+      "dimension": "闭合方式 Closure",
+      "priority": "核心",
+      "terms": [
+        "拉链 Zip Up",
+        "抽绳 Drawstring",
+        "套头 Pullover",
+        "纽扣 Button",
+        "半拉链 Half Zip",
+        "松紧带 Elastic Band",
+        "暗扣 Hidden Snap",
+        "魔术贴 Velcro",
+        "系带 Tie",
+        "卡扣 Buckle"
+      ]
+    },
+    {
+      "dimension": "节日活动 Holiday & Event",
+      "priority": "重要",
+      "terms": [
+        "万圣节 Halloween",
+        "圣诞节 Christmas",
+        "感恩节 Thanksgiving",
+        "黑色星期五 Black Friday",
+        "网络星期一 Cyber Monday",
+        "情人节 Valentine's Day",
+        "复活节 Easter",
+        "母亲节 Mother's Day",
+        "父亲节 Father's Day",
+        "美国独立日 Independence Day",
+        "元旦 New Year's Day",
+        "返校季 Back to School"
       ]
     }
   ]
