@@ -5,7 +5,7 @@
 let categories = [];
 let keywordData = {};
 let trends = [];
-
+let marketingData = [];
 
 /* =====================================================
    BASIC HELPERS
@@ -154,11 +154,12 @@ function loadPageFromHash() {
     location.hash.replace('#','');
 
   const validPages = [
-    'join',
-    'categories',
-    'title',
-    'resources'
-  ];
+  'join',
+  'categories',
+  'title',
+  'resources',
+  'marketing'
+];
 
   if (validPages.includes(hash)) {
 
@@ -1419,109 +1420,349 @@ document.addEventListener(
   }
 );
 
+// =========================
+// 营销日历
+// =========================
 
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let cell = '';
+  let inQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const next = text[i + 1];
+
+    if (char === '"') {
+      if (inQuotes && next === '"') {
+        cell += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (char === ',' && !inQuotes) {
+      row.push(cell);
+      cell = '';
+    } else if ((char === '\n' || char === '\r') && !inQuotes) {
+      if (char === '\r' && next === '\n') {
+        i++;
+      }
+
+      row.push(cell);
+      cell = '';
+
+      if (row.some(item => item.trim() !== '')) {
+        rows.push(row);
+      }
+
+      row = [];
+    } else {
+      cell += char;
+    }
+  }
+
+  if (cell !== '' || row.length > 0) {
+    row.push(cell);
+
+    if (row.some(item => item.trim() !== '')) {
+      rows.push(row);
+    }
+  }
+
+  if (!rows.length) {
+    return [];
+  }
+
+  // 去掉 Excel CSV 可能产生的 BOM
+  rows[0][0] = rows[0][0].replace(/^\uFEFF/, '').trim();
+
+  const headers = rows[0].map(header => header.trim());
+
+  return rows.slice(1).map(row => {
+    const obj = {};
+
+    headers.forEach((header, index) => {
+      obj[header] = (row[index] || '').trim();
+    });
+
+    return obj;
+  });
+}
+
+
+function initMarketingCalendar() {
+  const countrySelect = $('#marketingCountry');
+  const monthSelect = $('#marketingMonth');
+  const searchInput = $('#marketingSearch');
+  const clearButton = $('#clearMarketing');
+
+  if (!countrySelect || !monthSelect || !searchInput) {
+    return;
+  }
+
+  // 国家下拉选项
+  const countries = [...new Set(
+    marketingData
+      .map(item => item['国家'])
+      .filter(Boolean)
+  )];
+
+  countrySelect.innerHTML =
+    '<option value="">全部</option>' +
+    countries
+      .map(country => `<option value="${esc(country)}">${esc(country)}</option>`)
+      .join('');
+
+  function renderMarketingCalendar() {
+    const country = countrySelect.value;
+    const month = monthSelect.value;
+    const keyword = searchInput.value.trim().toLowerCase();
+
+    const filtered = marketingData.filter(item => {
+
+      // 国家筛选
+      if (country && item['国家'] !== country) {
+        return false;
+      }
+
+      // 月份筛选
+      if (month) {
+        const date = item['日期'] || '';
+
+        // 无特定日期不参与月份筛选
+        if (!/^\d{4}-\d{2}-\d{2}/.test(date)) {
+          return false;
+        }
+
+        const itemMonth = parseInt(date.substring(5, 7), 10);
+
+        if (itemMonth !== Number(month)) {
+          return false;
+        }
+      }
+
+      // 关键词搜索
+      if (keyword) {
+        const allText = Object.values(item)
+          .join(' ')
+          .toLowerCase();
+
+        if (!allText.includes(keyword)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
+    const list = $('#marketingList');
+    const count = $('#marketingCount');
+
+    if (!list) {
+      return;
+    }
+
+    if (count) {
+      count.textContent = `${filtered.length} 个节点`;
+    }
+
+    if (!filtered.length) {
+      list.innerHTML = `
+        <tr>
+          <td colspan="7" class="marketing-empty">
+            暂无符合条件的营销节点
+          </td>
+        </tr>
+      `;
+
+      return;
+    }
+
+    list.innerHTML = filtered.map(item => {
+
+      const date =
+        item['日期'] || '无特定日期';
+
+      const country =
+        item['国家'] || '-';
+
+      const event =
+        item['节日/活动名'] || '-';
+
+      const hotWords =
+        item['节日热搜词'] || '-';
+
+      const categoryWords =
+        item['对应品类/款式热搜词'] || '-';
+
+      const heat =
+        item['热度推荐'] || '';
+
+      const titleWords =
+        item['提前两个月标题加关键词'] || '-';
+
+      let heatHtml = '-';
+
+      if (heat) {
+        const heatNumber = Number(heat);
+
+        if (!isNaN(heatNumber)) {
+          heatHtml =
+            `<span class="heat-stars">${'★'.repeat(heatNumber)}</span>`;
+        } else {
+          heatHtml = esc(heat);
+        }
+      }
+
+      return `
+        <tr>
+
+          <td>
+            <div class="calendar-date">
+              ${esc(date)}
+            </div>
+          </td>
+
+          <td>
+            ${esc(country)}
+          </td>
+
+          <td>
+            <strong class="calendar-event">
+              ${esc(event)}
+            </strong>
+          </td>
+
+          <td>
+            ${heatHtml}
+          </td>
+
+          <td>
+            <div class="calendar-cell-text">
+              ${esc(hotWords)}
+            </div>
+          </td>
+
+          <td>
+            <div class="calendar-cell-text">
+              ${esc(categoryWords)}
+            </div>
+          </td>
+
+          <td>
+            <div class="calendar-cell-text">
+              ${esc(titleWords)}
+            </div>
+          </td>
+
+        </tr>
+      `;
+    }).join('');
+  }
+
+  countrySelect.addEventListener(
+    'change',
+    renderMarketingCalendar
+  );
+
+  monthSelect.addEventListener(
+    'change',
+    renderMarketingCalendar
+  );
+
+  searchInput.addEventListener(
+    'input',
+    renderMarketingCalendar
+  );
+
+  if (clearButton) {
+    clearButton.addEventListener('click', () => {
+
+      countrySelect.value = '';
+      monthSelect.value = '';
+      searchInput.value = '';
+
+      renderMarketingCalendar();
+    });
+  }
+
+  renderMarketingCalendar();
+}
 /* =====================================================
    LOAD DATA
 ===================================================== */
 
 Promise.all([
-
-  fetch(
-    'data/categories.json'
-  ).then(response => {
-
-    if (!response.ok)
-      throw new Error(
-        'categories.json 加载失败'
-      );
-
-    return response.json();
-
+  fetch('data/categories.json').then(r => {
+    if (!r.ok) throw new Error('categories.json 加载失败');
+    return r.json();
   }),
 
-
-  fetch(
-    'data/keywords.json'
-  ).then(response => {
-
-    if (!response.ok)
-      throw new Error(
-        'keywords.json 加载失败'
-      );
-
-    return response.json();
-
+  fetch('data/keywords.json').then(r => {
+    if (!r.ok) throw new Error('keywords.json 加载失败');
+    return r.json();
   }),
 
+  fetch('data/trends.json').then(r => {
+    if (!r.ok) throw new Error('trends.json 加载失败');
+    return r.json();
+  }),
 
-  fetch(
-    'data/trends.json'
-  ).then(response => {
-
-    if (!response.ok)
-      throw new Error(
-        'trends.json 加载失败'
-      );
-
-    return response.json();
-
+  fetch('data/marketing-calendar.csv').then(r => {
+    if (!r.ok) throw new Error('marketing-calendar.csv 加载失败');
+    return r.text();
   })
-
 ])
+.then(([categoryData, keywords, trendData, marketingCSV]) => {
 
-.then(
-  ([categoryData,
-    keywords,
-    trendData]) => {
+  categories = categoryData || [];
+  keywordData = keywords || {};
+  trends = trendData || [];
 
-    categories =
-      categoryData || [];
+  // 读取营销日历 CSV
+  marketingData = parseCSV(marketingCSV);
 
-    keywordData =
-      keywords || {};
+  initCats();
+  initKeywords();
+  loadTrends();
 
-    trends =
-      trendData || [];
+  // 初始化营销日历
+  initMarketingCalendar();
 
+  initGlobalSearch();
+  loadPageFromHash();
 
-    initCats();
-
-    initKeywords();
-
-    loadTrends();
-
-    initGlobalSearch();
-
-    loadPageFromHash();
-
-  }
-)
-
+})
 .catch(error => {
 
   console.error(error);
 
-
-  const result =
-    $('#catResults');
-
+  const result = $('#catResults');
 
   if (result) {
-
     result.innerHTML = `
-
       <div class="empty-category">
-
         数据加载失败。
-
         <p>
-          请确认 data 文件夹中的 JSON 文件路径正确。
+          请确认 data 文件夹中的数据文件路径正确。
         </p>
-
       </div>
-
     `;
+  }
 
+  const marketingList = $('#marketingList');
+
+  if (marketingList) {
+    marketingList.innerHTML = `
+      <tr>
+        <td colspan="7" class="marketing-empty">
+          营销日历数据加载失败，请检查
+          data/marketing-calendar.csv
+          是否存在。
+        </td>
+      </tr>
+    `;
   }
 
 });
