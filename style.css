@@ -2178,3 +2178,308 @@ main{
   }
 
 }
+
+/* =========================
+   PAGE 05 营销日历
+   ========================= */
+
+.calendar-toolbar {
+  display: grid;
+  grid-template-columns: 180px 180px minmax(260px, 1fr) auto;
+  gap: 16px;
+  align-items: end;
+  margin: 28px 0 22px;
+  padding: 20px;
+  border: 1px solid #e8e8e8;
+  background: #fafafa;
+}
+
+.calendar-toolbar label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calendar-toolbar label > span {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #777;
+}
+
+.calendar-toolbar select,
+.calendar-toolbar input {
+  width: 100%;
+  height: 42px;
+  box-sizing: border-box;
+  border: 1px solid #dcdcdc;
+  background: #fff;
+  padding: 0 12px;
+  font-size: 14px;
+  color: #222;
+  outline: none;
+}
+
+.calendar-toolbar select:focus,
+.calendar-toolbar input:focus {
+  border-color: #111;
+}
+
+.search-field {
+  min-width: 0;
+}
+
+.input-wrap {
+  display: flex;
+  align-items: center;
+  height: 42px;
+  border: 1px solid #dcdcdc;
+  background: #fff;
+}
+
+.input-wrap > span {
+  padding-left: 12px;
+  color: #999;
+  font-size: 18px;
+}
+
+.input-wrap input {
+  border: 0;
+  height: 40px;
+}
+
+.reset-btn {
+  height: 42px;
+  padding: 0 18px;
+  border: 1px solid #222;
+  background: #222;
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.reset-btn:hover {
+  background: #f28c28;
+  border-color: #f28c28;
+}
+
+/* 日历主体 */
+
+.marketing-calendar-card {
+  width: 100%;
+  border: 1px solid #e5e5e5;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 22px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.calendar-header > div {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.calendar-header strong {
+  font-size: 18px;
+  letter-spacing: 0.02em;
+}
+
+.calendar-header span {
+  font-size: 11px;
+  color: #999;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.result-tip {
+  padding: 6px 10px;
+  background: #f5f5f5;
+  color: #666 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+/* 表格 */
+
+.calendar-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.marketing-table {
+  width: 100%;
+  min-width: 1200px;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.marketing-table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 14px 12px;
+  background: #222;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.marketing-table td {
+  padding: 15px 12px;
+  border-bottom: 1px solid #ededed;
+  vertical-align: top;
+  font-size: 13px;
+  line-height: 1.65;
+  color: #444;
+  word-break: break-word;
+}
+
+.marketing-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.marketing-table tbody tr:hover {
+  background: #fff9f2;
+}
+
+/* 各列宽度 */
+
+.marketing-table th:nth-child(1),
+.marketing-table td:nth-child(1) {
+  width: 110px;
+}
+
+.marketing-table th:nth-child(2),
+.marketing-table td:nth-child(2) {
+  width: 80px;
+}
+
+.marketing-table th:nth-child(3),
+.marketing-table td:nth-child(3) {
+  width: 170px;
+}
+
+.marketing-table th:nth-child(4),
+.marketing-table td:nth-child(4) {
+  width: 80px;
+  text-align: center;
+}
+
+.marketing-table th:nth-child(5),
+.marketing-table td:nth-child(5) {
+  width: 230px;
+}
+
+.marketing-table th:nth-child(6),
+.marketing-table td:nth-child(6) {
+  width: 300px;
+}
+
+.marketing-table th:nth-child(7),
+.marketing-table td:nth-child(7) {
+  width: 220px;
+}
+
+/* 日期 */
+
+.calendar-date {
+  font-weight: 600;
+  color: #222;
+  white-space: nowrap;
+}
+
+/* 营销节点 */
+
+.calendar-event {
+  display: block;
+  color: #222;
+  font-size: 14px;
+}
+
+/* 热度 */
+
+.heat-stars {
+  color: #f28c28;
+  font-size: 14px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+/* 长文本 */
+
+.calendar-cell-text {
+  color: #555;
+  line-height: 1.7;
+}
+
+/* 空数据 */
+
+.marketing-empty {
+  padding: 60px 20px !important;
+  text-align: center;
+  color: #999 !important;
+}
+
+/* 页面底部提示 */
+
+.copyright-notice {
+  margin-top: 16px;
+}
+
+/* =========================
+   手机端
+   ========================= */
+
+@media (max-width: 900px) {
+
+  .calendar-toolbar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .calendar-toolbar .search-field {
+    grid-column: 1 / -1;
+  }
+
+  .calendar-toolbar .reset-btn {
+    width: 100%;
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .calendar-toolbar {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 15px;
+  }
+
+  .calendar-toolbar .search-field {
+    grid-column: auto;
+  }
+
+  .calendar-header {
+    padding: 16px;
+  }
+
+  .calendar-header > div {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .marketing-table {
+    min-width: 1100px;
+  }
+
+}
